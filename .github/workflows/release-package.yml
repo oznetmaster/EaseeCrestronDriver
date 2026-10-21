@@ -62,7 +62,9 @@ jobs:
           ./.github/scripts/Wait-RequiredReleaseChecks.ps1
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: |
+            10.0.x
+            8.0.x
       - uses: actions/checkout@v4
         with:
           repository: oznetmaster/CrestronHomeNUnit
@@ -112,4 +114,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
           RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
-        run: gh release create "$RELEASE_TAG" artifacts/release/* --verify-tag --title "EaseeCrestronDriver $RELEASE_VERSION" --notes-file RELEASE-NOTES.md
+        run: |
+          extra=()
+          if [[ "$RELEASE_VERSION" == *-* ]]; then extra+=(--prerelease); fi
+          gh release create "$RELEASE_TAG" artifacts/release/* --verify-tag --title "EaseeCrestronDriver $RELEASE_VERSION" --notes-file RELEASE-NOTES.md "${extra[@]}"
