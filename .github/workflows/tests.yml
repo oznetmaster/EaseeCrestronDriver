@@ -1,0 +1,35 @@
+name: Tests
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Test release guards
+        shell: pwsh
+        run: |
+          ./.github/scripts/Test-RequiredReleaseChecks.ps1
+          ./scripts/Test-ReleaseVersion.ps1
+      - name: Run offline NUnit 5 suites
+        shell: pwsh
+        run: ./scripts/Test-Offline.ps1
+      - name: Build desktop validation tooling
+        run: dotnet build validation/Workflow/Workflow.csproj -c Release --disable-build-servers
+      - name: Build Android fixture harness without running it
+        run: dotnet build validation/AndroidTests/EaseeCrestronDriver.AndroidTests.csproj -c Release --disable-build-servers
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: offline-test-results
+          path: TestResults/offline/*.trx
+          if-no-files-found: error

@@ -1,6 +1,6 @@
 ﻿# EaseeCrestronDriver
 
-Local Crestron Home Entity V2 driver for one Easee charger, using the published **EaseeChargerClient 1.0.0** package. The shipping solution and its unit/live tests target **.NET Framework 4.7.2** and use the latest C# language. The separate Android UI validation harness targets .NET 10 for the public test workflow. The driver has not been published.
+Crestron Home Entity V2 driver for one Easee charger, using the published **EaseeChargerClient 1.0.0** package. The shipping solution and its unit/live tests target **.NET Framework 4.7.2** and use the latest C# language. The separate Android UI validation harness targets .NET 10 for the public test workflow. [Public source](https://github.com/oznetmaster/EaseeCrestronDriver). No public driver release has been published.
 
 The tile reports status and charging power. When a vehicle is connected and idle, a verified future schedule start takes precedence. Configure can place the tile on its room page, the home page, or both. The Room tile provides a direct Charge/Stop action and separate detail navigation. The Home tile opens details, where Charge and Stop are available. This matches the observed Crestron Home 4.11.1+pr behavior and the selected design. A shared v3 tile definition retains action and navigation so Both can provide the Room action.
 
@@ -15,6 +15,8 @@ Details include session and lifetime energy, schedule information, connection st
 All exposed properties, commands and events use entity attributes. Programmable events cover charging start/stop, vehicle connection/disconnection, online/offline and charger error. Initial and reconnect snapshots establish a baseline instead of manufacturing charging events. Missing data has explicit availability flags. The `commandActivity` diagnostic property records instance epoch and completed/pending command counts; completion does not imply charging began.
 
 ## Build and test
+
+CI and release setup are documented in [PUBLISHING.md](PUBLISHING.md). The shipping solution remains net472; desktop workflow, discovery and Android tools live separately under alidation/.
 
 Requires Windows, .NET SDK 10, and `dotnet-ilrepack` 2.0.45. ManifestUtil 29.0.10 is restored from NuGet. The processor package consumes the pinned published CrestronHomeNUnit 3.0.0 SDK described in `ProcessorTestSdk.lock.json`.
 
@@ -54,6 +56,6 @@ The exact package SHA256 is `09d94c09572869d8919683cfe4bfc5a985b383276b498b468e8
 
 Earlier failed and blocked runs remain failed results. Cleanup is documented in their workflow results or separate reconciliation receipts. During build investigation, a previously blocked driver DLL later passed unchanged. A UI binary remained blocked in controlled and crossed-folder comparisons. Normalized source paths now make the UI harness builds reproducible across source directories. The final unsigned UI assembly ran with Smart App Control enforced; no signing certificate or security-policy change was used. The cause of Windows' earlier differing verdicts remains unproved.
 
-Start/stop request acceptance with the fully charged vehicle does not demonstrate energy delivery. Live current-limit and cable-lock writes remain unexercised. The driver remains local and unpublished. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE-NOTES.md](RELEASE-NOTES.md) for the local candidate notes. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE-NOTES.md](RELEASE-NOTES.md) for the local candidate notes.
+Start/stop request acceptance with the fully charged vehicle does not demonstrate energy delivery. Live current-limit and cable-lock writes remain unexercised. The source repository is public; the validated development package has no public release tag. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE-NOTES.md](RELEASE-NOTES.md) for the local candidate notes. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE-NOTES.md](RELEASE-NOTES.md) for the local candidate notes.
 
 Copyright Neil Colvin. MIT License with Commons Clause; see LICENSE.

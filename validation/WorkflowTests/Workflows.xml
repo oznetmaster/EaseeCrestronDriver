@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Workflows>
+  <Workflow id="easeecrestrondriver_driver" name="EaseeCrestronDriver processor workflow" settingsEnvironment="CRESTRON_HOME_EASEECRESTRONDRIVER_WORKFLOW_SETTINGS" />
+</Workflows>

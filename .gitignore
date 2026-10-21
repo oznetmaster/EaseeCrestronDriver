@@ -18,3 +18,5 @@ InitialConfiguration.json
 AndroidProfile.json
 processor.settings.json
 *.binlog
+
+.processor-sdk/

@@ -15,7 +15,7 @@
 - Start/stop live validation authorized. Other setting writes remain unexercised.
 - HPNEIL only, shared machine and processor leases, public workflow and retained evidence. Office is the chosen validation room.
 - MIT with Commons Clause and Neil Colvin metadata match the model.
-- Local development only; no driver repository creation or publication authorized.
+- Public source repository and release workflow authorized; no public driver release has been published.
 
 Candidate 0.1.000.0006 passed 61 desktop tests, 69 native tests, four read-only processor live tests and six installed-driver checks. The exact compact-display package is installed on .241 in Office; temporary validation resources and reservations were released.
 
