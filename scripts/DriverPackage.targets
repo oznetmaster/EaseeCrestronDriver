@@ -1,0 +1,33 @@
+<Project>
+  <PropertyGroup>
+    <BuildDriverPackage Condition="'$(BuildDriverPackage)' == ''">true</BuildDriverPackage>
+    <BuildDriverPackage Condition="'$(BuildDriverPackage)' == ''">false</BuildDriverPackage>
+    <IlRepackToolDirectory Condition="'$(IlRepackToolDirectory)' == ''">$(UserProfile)\.dotnet\tools\.store\dotnet-ilrepack\2.0.45\dotnet-ilrepack\2.0.45\tools\net8.0\any</IlRepackToolDirectory>
+  </PropertyGroup>
+  <Target Name="BumpEaseeDebugVersion" BeforeTargets="BeforeBuild" Condition="'$(BuildDriverPackage)' == 'true' And '$(DesignTimeBuild)' != 'true'">
+    <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\BumpDriverVersion.ps1&quot; -ManifestPath &quot;$(MSBuildProjectDirectory)\EaseeCrestronDriver.json&quot; -Configuration &quot;$(Configuration)&quot;"/>
+  </Target>
+  <Target Name="BuildEaseePackage" AfterTargets="Build" Condition="'$(BuildDriverPackage)' == 'true' And '$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <ManifestUtilExe>$(PkgCrestron_DeviceDrivers_ManifestUtil)\tools\net8.0\any\ManifestUtil.exe</ManifestUtilExe>
+      <MergedDriverPath>$(TargetDir)merged\$(AssemblyName).dll</MergedDriverPath>
+      <PatchedDriverPath>$(TargetDir)patched\$(AssemblyName).dll</PatchedDriverPath>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(ManifestUtilExe)')" Text="Restore the pinned Crestron.DeviceDrivers.ManifestUtil package."/>
+    <Error Condition="!Exists('$(IlRepackToolDirectory)\ILRepackTool.dll')" Text="Install dotnet-ilrepack 2.0.45 or set IlRepackToolDirectory."/>
+    <ItemGroup>
+      <EaseeMergeInputs Include="$(TargetPath)"/>
+      <EaseeMergeInputs Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)' == '.dll' And !$([System.String]::Copy('%(ReferenceCopyLocalPaths.NuGetPackageId)').ToLowerInvariant().StartsWith('crestron.'))"/>
+    </ItemGroup>
+    <WriteLinesToFile File="$(TargetDir)merge_inputs.txt" Lines="@(EaseeMergeInputs->'%(FullPath)')" Overwrite="true"/>
+    <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\ILRepackMerge.ps1&quot; -TargetPath &quot;$(TargetPath)&quot; -OutputPath &quot;$(MergedDriverPath)&quot; -InputListFile &quot;$(TargetDir)merge_inputs.txt&quot; -LibDir &quot;$(TargetDir.TrimEnd('\'))&quot; -ToolDirectory &quot;$(IlRepackToolDirectory)&quot;"/>
+    <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\PatchMergedAssembly.ps1&quot; -AssemblyPath &quot;$(MergedDriverPath)&quot; -OutputPath &quot;$(PatchedDriverPath)&quot; -CecilPath &quot;$(IlRepackToolDirectory)\Mono.Cecil.dll&quot; -InputListFile &quot;$(TargetDir)merge_inputs.txt&quot; -ManifestPath &quot;$(MSBuildProjectDirectory)\EaseeCrestronDriver.json&quot;"/>
+    <ItemGroup><EaseeUiFiles Include="$(MSBuildProjectDirectory)\IncludeInPkg\**\*"/></ItemGroup>
+    <Copy SourceFiles="@(EaseeUiFiles)" DestinationFiles="@(EaseeUiFiles->'$(TargetDir)patched\IncludeInPkg\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\..\LICENSE" DestinationFiles="$(TargetDir)patched\IncludeInPkg\Licenses\EaseeDriver-LICENSE.txt"/>
+    <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\Stage-Licences.ps1&quot; -AssetsFile &quot;$(ProjectAssetsFile)&quot; -OutputDirectory &quot;$(TargetDir)patched\IncludeInPkg\Licenses\Dependencies&quot;"/>
+    <Exec Command="&quot;$(ManifestUtilExe)&quot; --file &quot;$(PatchedDriverPath)&quot; --lib &quot;$(TargetDir.TrimEnd('\'))&quot; --output &quot;$(TargetDir.TrimEnd('\'))&quot;"/>
+    <Error Condition="!Exists('$(TargetDir)$(AssemblyName).pkg')" Text="The driver package was not created."/>
+    <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\Finalize-DriverPackage.ps1&quot; -PackagePath &quot;$(TargetDir)$(AssemblyName).pkg&quot; -AssemblyPath &quot;$(PatchedDriverPath)&quot;"/>
+  </Target>
+</Project>

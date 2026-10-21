@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net472</TargetFramework><GenerateDocumentationFile>true</GenerateDocumentationFile><GenerateDriverPackage>false</GenerateDriverPackage><CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies><AssemblyName>EaseeCrestronDriver</AssemblyName></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../EaseeCrestronDriver.Core/EaseeCrestronDriver.Core.csproj" />
+    <PackageReference Include="Crestron.DeviceDrivers.DevKit" Version="29.0.10" />
+    <PackageReference Include="Crestron.SimplSharp.SDK.Library" Version="2.22.15" ExcludeAssets="build;buildTransitive" />
+    <PackageReference Include="Crestron.DeviceDrivers.ManifestUtil" Version="29.0.10" GeneratePathProperty="true" PrivateAssets="all" ExcludeAssets="all" />
+    <EmbeddedResource Include="EaseeCrestronDriver.json" />
+    <InternalsVisibleTo Include="EaseeCrestronDriver.Tests" />
+  </ItemGroup>
+  <Import Project="../scripts/DriverPackage.targets" />
+</Project>

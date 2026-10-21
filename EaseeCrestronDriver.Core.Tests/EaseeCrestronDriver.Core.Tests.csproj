@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net472</TargetFramework><IsTestProject>true</IsTestProject><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects><GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../EaseeCrestronDriver.Core/EaseeCrestronDriver.Core.csproj" /></ItemGroup>
+</Project>

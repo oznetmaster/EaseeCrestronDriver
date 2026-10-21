@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net472</TargetFramework><GenerateDocumentationFile>true</GenerateDocumentationFile></PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Xml.Linq" />
+    <PackageReference Include="TimeZoneConverter" Version="8.0.0" />
+    <PackageReference Include="EaseeChargerClient" Version="1.0.0" />
+    <InternalsVisibleTo Include="EaseeCrestronDriver" /><InternalsVisibleTo Include="EaseeCrestronDriver.Core.Tests" />
+    <InternalsVisibleTo Include="EaseeCrestronDriver.Tests" /><InternalsVisibleTo Include="EaseeCrestronDriver.LiveTests" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net472</TargetFramework><IsTestProject>true</IsTestProject><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects><GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../EaseeCrestronDriver/EaseeCrestronDriver.csproj" AdditionalProperties="BuildDriverPackage=false" />
+    <EmbeddedResource Include="../_schema.xsd" LogicalName="EaseeDriver.Tests.Schema" />
+    <EmbeddedResource Include="../EaseeCrestronDriver/IncludeInPkg/UiDefinitions/UiDefinition.xml" LogicalName="EaseeDriver.Tests.Ui" />
+    <EmbeddedResource Include="../EaseeCrestronDriver/IncludeInPkg/Translations/en-US.json" LogicalName="EaseeDriver.Tests.Translation" />
+    <EmbeddedResource Include="../EaseeCrestronDriver/EaseeCrestronDriver.json" LogicalName="EaseeDriver.Tests.Manifest" />
+    <None Include="../EaseeCrestronDriver/IncludeInPkg/**/*" Link="IncludeInPkg/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

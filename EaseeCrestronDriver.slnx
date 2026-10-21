@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="EaseeCrestronDriver.Core/EaseeCrestronDriver.Core.csproj" />
+  <Project Path="EaseeCrestronDriver.Core.Tests/EaseeCrestronDriver.Core.Tests.csproj" />
+  <Project Path="EaseeCrestronDriver/EaseeCrestronDriver.csproj" />
+  <Project Path="EaseeCrestronDriver.ProcessorTests/EaseeCrestronDriver.ProcessorTests.csproj" />
+  <Project Path="EaseeCrestronDriver.Tests/EaseeCrestronDriver.Tests.csproj" />
+  <Project Path="EaseeCrestronDriver.LiveTests/EaseeCrestronDriver.LiveTests.csproj" />
+</Solution>

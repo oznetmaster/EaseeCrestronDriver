@@ -1,0 +1,20 @@
+{
+  "Name": "Easee Driver Tests",
+  "Port": 0,
+  "Suites": [
+    {
+      "Id": "easee-driver",
+      "Name": "Easee Driver Tests — Unit Tests",
+      "FilterXml": "<filter><and><namespace re='1'>^Easee\\.CrestronDriver\\.Tests($|[.])</namespace><not><cat>Live</cat></not></and></filter>",
+      "ManualOnly": false,
+      "ExpectedCount": 69
+    },
+    {
+      "Id": "easee-driver-live",
+      "Name": "Easee Driver — Read-only Live Tests",
+      "FilterXml": "<filter><class>Easee.CrestronDriver.LiveTests.ReadOnlyTests</class></filter>",
+      "ManualOnly": true,
+      "ExpectedCount": 4
+    }
+  ]
+}

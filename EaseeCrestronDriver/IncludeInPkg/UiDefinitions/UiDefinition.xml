@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uidefinition>
+  <version ver="3.0"/>
+  <tile icon="{tileIcon}" status="{tileDisplay}" action="command:toggleCharging" navigation="show:MainPage" showinhomepage="#false" showinroompage="#true"/>
+  <layouts>
+    <layout id="MainPage" title="^MainTitle|{chargerName}" isdefaultlayout="#true" subtitle="{siteName}">
+      <controls>
+        <statusandnavigation id="State" label="^Status" status="{status}" statusicon="{tileIcon}"/>
+        <statusandnavigation id="Power" label="^Power" status="{powerDisplay}"/>
+        <statusandnavigation id="SessionEnergy" label="^SessionEnergy" status="{sessionEnergyDisplay}"/>
+        <statusandnavigation id="NextStart" label="^NextStart" status="{nextStartDisplay}"/>
+        <buttongroup>
+          <button id="Charge" label="^Charge" action="command:startCharging" enabled="{canCharge}"/>
+          <button id="Stop" label="^Stop" action="command:stopCharging" enabled="{controlsEnabled}"/>
+        </buttongroup>
+        <textdisplay id="CommandResult" title="^Connection" line1label="{connectionStatus}" line2label="{commandStatus}"/>
+        <button id="Settings" label="^Settings" navigation="show:SettingsPage"/>
+      </controls>
+    </layout>
+    <layout id="SettingsPage" title="^Settings" subtitle="{chargerName}">
+      <controls>
+        <selectorbutton id="SitePicker" label="^Site" value="{selectedSite}"/>
+        <selectorbutton id="ChargerPicker" label="^Charger" value="{selectedCharger}"/>
+        <toggle id="CableLock" label="^KeepCableLocked" value="{keepCableLocked}" enabled="{controlsEnabled}"/>
+        <selectorbutton id="RequestedAmps" label="^RequestedAmps" value="{requestedAmps}" enabled="{controlsEnabled}"/>
+        <selectorbutton id="RequestedMinutes" label="^RequestedMinutes" value="{requestedMinutes}" enabled="{controlsEnabled}"/>
+        <button id="ApplyCurrent" label="^ApplyCurrent" action="command:applyTemporaryCurrentLimit" enabled="{controlsEnabled}"/>
+        <statusandnavigation id="CurrentLimit" label="^CurrentLimit" status="{currentLimitDisplay}"/>
+        <statusandnavigation id="LifetimeEnergy" label="^LifetimeEnergy" status="{lifetimeEnergyDisplay}"/>
+        <textdisplay id="SerialNumber" title="^SerialNumber" line1label="{selectedCharger}"/>
+        <button id="Refresh" label="^Refresh" action="command:refreshNow"/>
+      </controls>
+    </layout>
+  </layouts>
+  <alerts/>
+</uidefinition>

@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><CodePage>65001</CodePage>
+    <Deterministic>true</Deterministic><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Authors>Neil Colvin</Authors><Company>Neil Colvin</Company><Version>0.1.0</Version>
+    <Copyright>Copyright © 2026 Neil Colvin</Copyright><IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Hafner.Compatibility.MetaPackage" Version="1.9.0" Condition="'$(MSBuildProjectName)' != 'EaseeCrestronDriver.ProcessorTests'" />
+    <Reference Include="System.Net.Http" />
+    <PackageReference Include="PolySharp" Version="1.16.0" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

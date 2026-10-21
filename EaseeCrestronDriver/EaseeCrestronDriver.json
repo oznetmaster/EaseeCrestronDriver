@@ -1,0 +1,85 @@
+{
+  "SchemaVersion": "2.0",
+  "GeneralInformation": {
+    "MinSdkVersion": "29.0000.0000",
+    "Guid": "e946ddc3-73f0-4dcd-ace7-e9528cfc8aae",
+    "DeviceType": "Energy Automation",
+    "Manufacturer": "Easee",
+    "BaseModel": "Easee Charger",
+    "OtherSupportedModels": [],
+    "SupportedSeries": [],
+    "DependencyGroup": "",
+    "Developer": {
+      "Company": "Neil Colvin",
+      "Contact": "Neil Colvin",
+      "Email": "",
+      "Website": "",
+      "PhoneNumber": ""
+    },
+    "DriverVersion": "0.1.000.0006",
+    "VersionDate": "2026-10-21 09:11:18.920"
+  },
+  "ConfigurationSteps": {
+    "Items": [
+      {
+        "Id": "Username",
+        "Title": "Easee account",
+        "Description": "Easee account email address or phone number. Select the site and charger in the driver Settings page after connecting.",
+        "Required": true,
+        "Persistent": true,
+        "ValueType": "String"
+      },
+      {
+        "Id": "Password",
+        "Title": "Easee password",
+        "Description": "Retained for automatic account recovery when the token session requires a fresh sign-in.",
+        "Required": true,
+        "Persistent": true,
+        "ValueType": "String",
+        "Masked": true
+      },
+      {
+        "Id": "SiteId",
+        "Title": "Selected site ID",
+        "Description": "Saved by the site picker in the driver Settings page.",
+        "Required": false,
+        "Persistent": true,
+        "ValueType": "String"
+      },
+      {
+        "Id": "ChargerId",
+        "Title": "Selected charger serial number",
+        "Description": "Saved by the charger picker in the driver Settings page.",
+        "Required": false,
+        "Persistent": true,
+        "ValueType": "String"
+      },
+      {
+        "Id": "TilePlacement",
+        "Title": "Tile placement",
+        "Description": "Show this charger on its room page, the home page, or both, with charging action and detail navigation.",
+        "Required": false,
+        "Persistent": true,
+        "ValueType": "String",
+        "DefaultValue": "Room page",
+        "AvailableValues": [
+          "Room page",
+          "Home page",
+          "Both"
+        ]
+      }
+    ],
+    "Steps": [
+      {
+        "StepId": "Account",
+        "Items": [
+          "Username",
+          "Password",
+          "TilePlacement"
+        ],
+        "NextStep": null
+      }
+    ],
+    "FirstStep": "Account"
+  }
+}

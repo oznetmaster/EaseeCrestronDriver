@@ -1,0 +1,47 @@
+<!-- Copyright (c) 2026 Neil Colvin. MIT License; see the CrestronHomeNUnit LICENSE. -->
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(MSBuildProjectName).Local.targets" Condition="Exists('$(MSBuildProjectName).Local.targets')" />
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject>
+    <ProcessorTestSdkRoot Condition="'$(ProcessorTestSdkRoot)' == ''">$(MSBuildProjectDirectory)\..\..\CrestronLibraryTests\sources\EaseeProcessorSdk</ProcessorTestSdkRoot>
+    <BuildProcessorTestPackages Condition="'$(BuildProcessorTestPackages)' == '' And '$(BuildingInsideVisualStudio)' == 'true'">true</BuildProcessorTestPackages>
+    <BuildProcessorTestPackages Condition="'$(BuildProcessorTestPackages)' == ''">false</BuildProcessorTestPackages>
+    <AssemblyName>EaseeCrestronDriver.ProcessorTests</AssemblyName>
+    <RootNamespace>CrestronHomeNUnit.Driver</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+  <Import Project="$(ProcessorTestSdkRoot)\ProcessorTestPackage\ProcessorTestPackage.props" Condition="'$(BuildProcessorTestPackages)' == 'true' And Exists('$(ProcessorTestSdkRoot)\ProcessorTestPackage\ProcessorTestPackage.props')" />
+  <ItemGroup Condition="'$(BuildProcessorTestPackages)' == 'true'">
+    <PackageReference Update="Crestron.DeviceDrivers.DevKit" Version="29.0.10" />
+    <PackageReference Include="Crestron.DeviceDrivers.ManifestUtil" Version="29.0.10" GeneratePathProperty="true" PrivateAssets="all" ExcludeAssets="all" />
+    <ProjectReference Include="..\EaseeCrestronDriver.Core.Tests\EaseeCrestronDriver.Core.Tests.csproj" />
+    <ProjectReference Include="..\EaseeCrestronDriver.Tests\EaseeCrestronDriver.Tests.csproj" />
+    <ProjectReference Include="..\EaseeCrestronDriver.LiveTests\EaseeCrestronDriver.LiveTests.csproj" />
+    <ProcessorTestData Include="..\EaseeCrestronDriver\IncludeInPkg\**\*" TargetPath="DriverTestData\%(RecursiveDir)%(Filename)%(Extension)" />
+    <ProcessorTestData Include="..\LICENSE" TargetPath="Licenses\EaseeDriver-LICENSE.txt" />
+  </ItemGroup>
+  <Import Project="$(ProcessorTestSdkRoot)\ProcessorTestPackage\ProcessorTestPackage.targets" Condition="'$(BuildProcessorTestPackages)' == 'true' And Exists('$(ProcessorTestSdkRoot)\ProcessorTestPackage\ProcessorTestPackage.targets')" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup Condition="'$(BuildProcessorTestPackages)' != 'true'">
+    <BuildDependsOn>SkipProcessorPackage</BuildDependsOn>
+    <RebuildDependsOn>SkipProcessorPackage</RebuildDependsOn>
+  </PropertyGroup>
+  <Target Name="SkipProcessorPackage">
+    <Message Importance="high" Text="Processor packaging skipped. Build in Visual Studio or set BuildProcessorTestPackages=true on Windows." />
+  </Target>
+  <Target Name="CheckProcessorTestSdk" BeforeTargets="PrepareForBuild" Condition="'$(BuildProcessorTestPackages)' == 'true'">
+    <Error Condition="!Exists('$(ProcessorTestSdkRoot)\ProcessorTestPackage\ProcessorTestPackage.targets')" Text="Set ProcessorTestSdkRoot to the CrestronHomeNUnit checkout containing the processor package SDK." />
+  </Target>
+  <Target Name="UseRestoredManifestUtil" BeforeTargets="MergeDependencies" Condition="'$(BuildProcessorTestPackages)' == 'true'">
+    <PropertyGroup><ManifestUtilExe>$(PkgCrestron_DeviceDrivers_ManifestUtil)\tools\net8.0\any\ManifestUtil.exe</ManifestUtilExe></PropertyGroup>
+    <Error Condition="!Exists('$(ManifestUtilExe)')" Text="Restore the pinned NuGet ManifestUtil package." />
+  </Target>
+  <Target Name="ExcludeDesktopTestTooling" BeforeTargets="MergeDependencies" Condition="'$(BuildProcessorTestPackages)' == 'true'">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(ReferenceCopyLocalPaths.NuGetPackageId)').ToLowerInvariant().StartsWith('microsoft.testing.')) Or $([System.String]::Copy('%(ReferenceCopyLocalPaths.NuGetPackageId)').ToLowerInvariant().StartsWith('microsoft.testplatform.')) Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Microsoft.ApplicationInsights' Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Microsoft.CodeCoverage' Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'NUnit3TestAdapter' Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Newtonsoft.Json' Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'log4net'" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -1,0 +1,21 @@
+{
+  "MainTitle": "Easee %s",
+  "Status": "Status",
+  "Power": "Charging power",
+  "SessionEnergy": "Session energy",
+  "LifetimeEnergy": "Lifetime energy",
+  "NextStart": "Next scheduled start",
+  "Charge": "Charge now",
+  "Stop": "Stop charging",
+  "Connection": "Connection",
+  "Settings": "Settings",
+  "Site": "Site",
+  "Charger": "Charger",
+  "KeepCableLocked": "Keep charging cable locked",
+  "CurrentLimit": "Temporary current limit",
+  "SerialNumber": "Serial number",
+  "Refresh": "Refresh status",
+  "RequestedAmps": "Current limit (A)",
+  "RequestedMinutes": "Duration (minutes)",
+  "ApplyCurrent": "Apply temporary limit"
+}
