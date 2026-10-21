@@ -1,4 +1,4 @@
-# EaseeCrestronDriver requirements review
+﻿# EaseeCrestronDriver requirements review
 
 Reviewed 21 October 2026 against the agreed driver scope and the retained validation for local candidate **0.1.000.0006**.
 
@@ -55,7 +55,7 @@ Debug packaging advances the manifest version. Preserve the validated package; a
 
 ## Remaining boundaries
 
-Physical energy delivery with a vehicle requesting charge, live current-limit/cable-lock changes, and physical generation of every event have not been demonstrated. Those limitations are explicit; no such results are inferred from HTTP acceptance or offline tests. GitHub publication and release tagging for this driver are a separate next step.
+Physical energy delivery with a vehicle requesting charge, live current-limit/cable-lock changes, and physical generation of every event have not been demonstrated. Those limitations are explicit; no such results are inferred from HTTP acceptance or offline tests. The public GitHub repository and gated release workflow are configured. Publishing a versioned driver release is a separate next step.
 
 ## Repository workflow handoff
 

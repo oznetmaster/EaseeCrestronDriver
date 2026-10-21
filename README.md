@@ -16,7 +16,7 @@ All exposed properties, commands and events use entity attributes. Programmable 
 
 ## Build and test
 
-CI and release setup are documented in [PUBLISHING.md](PUBLISHING.md). The shipping solution remains net472; desktop workflow, discovery and Android tools live separately under alidation/.
+CI and release setup are documented in [PUBLISHING.md](PUBLISHING.md). The shipping solution remains net472; desktop workflow, discovery and Android tools live separately under `validation/`.
 
 Requires Windows, .NET SDK 10, and `dotnet-ilrepack` 2.0.45. ManifestUtil 29.0.10 is restored from NuGet. The processor package consumes the pinned published CrestronHomeNUnit 3.0.0 SDK described in `ProcessorTestSdk.lock.json`.
 
