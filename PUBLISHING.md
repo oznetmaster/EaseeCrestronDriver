@@ -18,6 +18,8 @@ Run **Release Package** manually on `master`, supply a three-part version matchi
 
 The source App check certifies the tested source/test package. It does not certify independently rebuilt Release driver bytes. Before publishing a new driver candidate, validate those exact bytes through the installed-driver workflow and required actual UI scenarios, retaining the package hash and limitations. The original development candidate's evidence cannot be transferred to a new version or rebuilt package.
 
+For the initial 1.0.0 release, the user visually approved the final label update and explicitly waived repeating its manual UI suites before authorizing publication. VALIDATION.md records the approved package and the distinction between historical exact-byte evidence and the new versioned Release build. This specific approval does not waive the required exact-source hosted or processor gates.
+
 ## Publish an explicitly prepared release
 
 Prepare the intended three-part version in the source manifest and root release notes, then commit it and obtain passing exact-source checks. The release-notes heading must be `# EaseeCrestronDriver VERSION`. A release-build package uses the corresponding four-part driver version ending in `.0`; Debug packaging advances its build component. The workflow rejects a tag/manifest mismatch.

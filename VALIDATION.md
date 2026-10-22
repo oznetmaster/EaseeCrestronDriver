@@ -1,8 +1,18 @@
-﻿# EaseeCrestronDriver requirements review
+# EaseeCrestronDriver validation
 
-Reviewed 21 October 2026 against the agreed driver scope and the retained validation for local candidate **0.1.000.0006**.
+## 1.0.0 release acceptance — 22 October 2026
 
-The requested implementation and authorized validation are complete. The candidate remains local and unpublished. This review adds documentation and an integrity checker; it does not change the tested driver or represent a new hardware run.
+The user approved the driver visually and authorized the first stable public release. The final label review used version **0.1.000.0007**, source `be56e05c652a31d2f6ca8ba8b8fa7f00d2eaca44`, package SHA256 `68f531e2d65f6829b6858665aa8ad0582f7a012c1e8e794e700a0fef8c0b3066`. Its installed payload, version, account selection and Both placement were verified before human review. The user explicitly waived repeating tests for the label change, then confirmed “looks good” and requested publication. The review reservation was released while leaving the approved driver installed.
+
+A preceding Release candidate **0.1.000.0000**, source `2eac248dd0e51817adee41cceb14d37d8f9688c3`, SHA256 `531a574659b62688dd7b4329b68adea6e6c852c45fca0106b91f73cde808612e`, also passed the desktop/processor/live, installed-driver and four actual-app scenarios on HPNEIL and the reserved review processor. Room used the pinned public SDK. Home/Both/pickers used an isolated SDK source fix for Android scrolling; this test-only SDK was not shipped in the driver or published. Earlier failures remain failed records. The processor-native host was built in Debug; this does not establish execution of an independently built Release test host.
+
+Version **1.0.000.0000** is a new CI Release build of the approved implementation with release metadata. Required hosted and App-reported processor checks run against the exact final source commit. The published SourceIdentity.json and SHA256SUMS.txt identify its bytes. Historical UI/live evidence is not an exact-byte attestation of that rebuild; the explicit human approval and retest waiver above govern this release. No additional charger commands are part of publication.
+
+The fully charged vehicle established start/stop request acceptance and final noncharging state, not energy delivery. Live current-limit and cable-lock writes remain unexercised. A future scheduled-start tile and every physical event were not generated on the live charger.
+
+## Historical development candidate review — 21 October 2026
+
+The following ledger records the original local candidate **0.1.000.0006** and its retained evidence. Its package/source integrity checker is a historical comparison and is expected to report source drift after later label and release-version changes. It is not a release gate for 1.0.0.
 
 ## Requirements and evidence
 

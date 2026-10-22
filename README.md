@@ -1,6 +1,6 @@
-﻿# EaseeCrestronDriver
+# EaseeCrestronDriver
 
-Crestron Home Entity V2 driver for one Easee charger, using the published **EaseeChargerClient 1.0.0** package. The shipping solution and its unit/live tests target **.NET Framework 4.7.2** and use the latest C# language. The separate Android UI validation harness targets .NET 10 for the public test workflow. [Public source](https://github.com/oznetmaster/EaseeCrestronDriver). No public driver release has been published.
+Crestron Home Entity V2 driver for one Easee charger, using the published **EaseeChargerClient 1.0.0** package. The shipping solution and its unit/live tests target **.NET Framework 4.7.2** and use the latest C# language. The separate Android UI validation harness targets .NET 10 for the public test workflow. [Public source](https://github.com/oznetmaster/EaseeCrestronDriver). Download the stable driver package from [GitHub Releases](https://github.com/oznetmaster/EaseeCrestronDriver/releases/latest).
 
 The tile reports status and charging power. When a vehicle is connected and idle, a verified future schedule start takes precedence. Configure can place the tile on its room page, the home page, or both. The Room tile provides a direct Charge/Stop action and separate detail navigation. The Home tile opens details, where Charge and Stop are available. This matches the observed Crestron Home 4.11.1+pr behavior and the selected design. A shared v3 tile definition retains action and navigation so Both can provide the Room action.
 
@@ -38,7 +38,7 @@ Use the existing HPNEIL worker and public CrestronHomeNUnit workflow. HPNEIL and
 
 ## Validation status
 
-The requirement-by-requirement review is in [VALIDATION.md](VALIDATION.md). Before using the retained candidate, run `./scripts/Verify-ValidatedCandidate.ps1` in PowerShell 7. It checks current production source and retained package/evidence identity without rebuilding or contacting hardware; any source drift needs fresh candidate validation.
+The release acceptance and requirement-by-requirement history are in [VALIDATION.md](VALIDATION.md). Version 1.0.0 follows human visual approval of the final labels on 22 October 2026, with a repeat manual UI cycle explicitly waived by the user. Required exact-source hosted and processor checks gate publication. The historical `Verify-ValidatedCandidate.ps1` tool compares the original development candidate, so later source changes intentionally fail that comparison.
 
 On 21 October 2026, candidate **0.1.000.0006** passed the following checks on HPNEIL and the .241 processor in Office:
 
@@ -52,10 +52,10 @@ On 21 October 2026, candidate **0.1.000.0006** passed the following checks on HP
 
 The UI scenarios separately covered **Room page**, **Home page**, **Both**, and read-only site/charger picker inspection in Crestron Home 4.11.1+pr. Placement checks verified presence/absence, readable status and power, navigation, authorized start/stop requests and final noncharging state. Home navigation was checked to issue no charger command. Picker checks verified the complete expected option lists and selected states without selecting an option. Every successful run confirmed Home restoration, the unchanged candidate payload, cleanup and reservation release. The selected site and charger were preserved, and Room-only placement was restored.
 
-The exact package SHA256 is `09d94c09572869d8919683cfe4bfc5a985b383276b498b468e88fb7a3306cb7b`. The local manifest was synchronized from the exact embedded resource in that package. The implementation files match the tested production source. The validated package and retained evidence are staged in `artifacts/validated/0.1.000.0006/`. Debug packaging advances the revision; rebuilding does not reproduce this already validated package automatically.
+The exact package SHA256 is `09d94c09572869d8919683cfe4bfc5a985b383276b498b468e88fb7a3306cb7b`. The local manifest was synchronized from the exact embedded resource in that package. These records identify the historical candidate; subsequent label and version changes are described in VALIDATION.md. The validated package and retained evidence are staged in `artifacts/validated/0.1.000.0006/`. Debug packaging advances the revision; rebuilding does not reproduce this already validated package automatically.
 
 Earlier failed and blocked runs remain failed results. Cleanup is documented in their workflow results or separate reconciliation receipts. During build investigation, a previously blocked driver DLL later passed unchanged. A UI binary remained blocked in controlled and crossed-folder comparisons. Normalized source paths now make the UI harness builds reproducible across source directories. The final unsigned UI assembly ran with Smart App Control enforced; no signing certificate or security-policy change was used. The cause of Windows' earlier differing verdicts remains unproved.
 
-Start/stop request acceptance with the fully charged vehicle does not demonstrate energy delivery. Live current-limit and cable-lock writes remain unexercised. The source repository is public; the validated development package has no public release tag. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE-NOTES.md](RELEASE-NOTES.md) for the local candidate notes. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE-NOTES.md](RELEASE-NOTES.md) for the local candidate notes.
+Start/stop request acceptance with the fully charged vehicle does not demonstrate energy delivery. Live current-limit and cable-lock writes remain unexercised. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE-NOTES.md](RELEASE-NOTES.md) for the public release notes. Published checksums identify the Release assets separately from the retained development candidates.
 
 Copyright Neil Colvin. MIT License with Commons Clause; see LICENSE.

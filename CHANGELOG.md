@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0 — 2026-10-22
+
+First stable public release. Includes the charger reporting, configuration, tile placements, immediate Charge/Stop, temporary charging-current override and cable-lock controls described below. Clarifies the labels to “Awaiting charging authorization”, “Charging current limit”, “Temporary limit (A)” and “Override duration (min)”.
+
+The label update was installed and visually approved by the user on 22 October. The user waived a repeat manual UI test cycle and authorized publication. Required exact-source hosted/processor checks remain release gates. See RELEASE-NOTES.md and VALIDATION.md for the validation history and live-test limitations.
+
 ## 0.1.000.0006 — local development candidate — 2026-10-21
 
 Initial local Easee charger driver using EaseeChargerClient 1.0.0.
