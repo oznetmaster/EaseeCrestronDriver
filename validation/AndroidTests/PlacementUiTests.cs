@@ -206,10 +206,15 @@ public sealed class PlacementUiTests
 				await _navigation.OpenRoomAsync ("Office", token);
 				return;
 				}
+			catch (TimeoutException error) when (attempt < 2 && IsCaptureFailure (error))
+				{
+				// The SDK retains its attributed destination after a read failure. Let it
+				// confirm that page and restore Home before any navigation-only retry.
+				// Charging gestures never enter this recovery path.
+				await RestoreNavigationBeforeRetry ("navigation-capture-gap-" + (_capture++), token);
+				}
 			catch (InvalidOperationException) when (attempt < 2)
 				{
-				// Retry only navigation, after observing the specific connecting screen and
-				// independently restoring the known Home. Charging gestures never use this path.
 				var gap = await _session.Device.CaptureAsync (token);
 				if (!CrestronHomePages.IsConnecting (gap))
 					throw;
@@ -217,14 +222,22 @@ public sealed class PlacementUiTests
 				File.WriteAllText (Path.Combine (_context.EvidenceDirectory, id + ".xml"), gap.MaskedXml);
 				await WaitPage (hierarchy =>
 					{
-						if (CrestronHomePages.IsConnecting (hierarchy))
-							throw new InvalidOperationException ("The app is still connecting.");
+					if (CrestronHomePages.IsConnecting (hierarchy))
+						throw new InvalidOperationException ("The app is still connecting.");
 					}, token);
-				await _navigation.RestoreHomeAndCaptureAsync (id + "-restored", token);
-				_page = "Home";
-				await _session.CaptureAsync (id + "-before-retry", Home, token);
+				await RestoreNavigationBeforeRetry (id, token);
 				}
 			}
+		}
+	private static bool IsCaptureFailure (Exception error) =>
+		error.Data.Contains ("AndroidCaptureFailureCode") ||
+		error.InnerException is { } inner && IsCaptureFailure (inner) ||
+		error is AggregateException aggregate && aggregate.InnerExceptions.Any (IsCaptureFailure);
+	private async Task RestoreNavigationBeforeRetry (string id, CancellationToken token)
+		{
+		await _navigation.RestoreHomeAndCaptureAsync (id + "-restored", token);
+		_page = "Home";
+		await _session.CaptureAsync (id + "-before-retry", Home, token);
 		}
 	private void Room (AndroidHierarchy h) => CrestronHomePages.RequireRoom (h, "Office");
 	private AndroidHierarchy Main (AndroidHierarchy h) => CrestronHomeExtensionPages.RequirePage (h, [_title]);
