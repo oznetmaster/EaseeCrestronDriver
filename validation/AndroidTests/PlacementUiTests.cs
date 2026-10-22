@@ -17,7 +17,6 @@ public sealed class PlacementUiTests
 	private const string Package = "com.crestron.phoenix.app";
 	private const string Prefix = "com.crestron.phoenix.app:id/";
 	private static readonly JsonSerializerOptions Json = new () { PropertyNameCaseInsensitive = true };
-	private ConfigurationClient _processor = null!;
 	private AndroidWorkflowSession _session = null!;
 	private CrestronHomeNavigation _navigation = null!;
 	private AndroidRunContext _context = null!;
@@ -59,12 +58,6 @@ public sealed class PlacementUiTests
 			throw new InvalidDataException ("Private selection/observer inputs are unavailable or too close to expiry.");
 		using var active = new CancellationTokenSource (TimeSpan.FromMinutes (24));
 		var token = active.Token;
-		await using var processor = await ConfigurationClient.ConnectAsync (new ()
-			{
-			Host = _settings.Host,
-			CertificateSha256 = _settings.CertificateSha256
-			}, new NetworkCredential (_settings.UserName, _settings.Password), token);
-		_processor = processor;
 		await PrepareSelectedCharger (token);
 		var before = await Read (token);
 		_tile = before.Name!;
@@ -76,7 +69,8 @@ public sealed class PlacementUiTests
 		using var observer = new EaseeClient (new EaseeClientOptions { TokenProvider = new Access (_settings) });
 		try
 			{
-			await _navigation.VerifySavedEndpointAsync ("easee.placement-endpoint", _context.Profile.LocalPort, token);
+			if (!_session.SavedEndpointVerifiedOnOpen)
+				await _navigation.VerifySavedEndpointAsync ("easee.placement-endpoint", _context.Profile.LocalPort, token);
 			await SetPlacement (placement, token);
 			await AssertVisibility ("Home", home, token);
 			await OpenRoomWhenConnected (token);
@@ -117,9 +111,17 @@ public sealed class PlacementUiTests
 			}
 		}
 
+	private async Task<ConfigurationClient> Connect (CancellationToken token) =>
+		await ConfigurationClient.ConnectAsync (new ()
+			{
+			Host = _settings.Host,
+			CertificateSha256 = _settings.CertificateSha256
+			}, new NetworkCredential (_settings.UserName, _settings.Password), token);
+
 	private async Task<DeviceInfo> Read (CancellationToken token)
 		{
-		var d = await _processor.GetDeviceAsync (_context.InstalledDriverId, token) ?? throw new InvalidDataException ("Candidate disappeared.");
+		await using var processor = await Connect (token);
+		var d = await processor.GetDeviceAsync (_context.InstalledDriverId, token) ?? throw new InvalidDataException ("Candidate disappeared.");
 		if (d.Model != "Easee Charger" || d.PropertyValues["cp.driverInformation:version"].GetString () != _context.DriverVersion || !d.PropertyValues["cp.driverConfiguration:isConfigured"].GetBoolean ())
 			throw new InvalidDataException ("Candidate identity/configuration differs.");
 		return d;
@@ -149,7 +151,8 @@ public sealed class PlacementUiTests
 				throw new InvalidDataException ("A different explicit selection is already configured.");
 			string journal = Path.Combine (_context.EvidenceDirectory, "prepare-" + entry.Property + ".json");
 			Intent (journal, "Select explicitly supplied device");
-			await _processor.ExecuteDeviceCommandAsync (d.Id, entry.Command, new
+			await using var processor = await Connect (token);
+			await processor.ExecuteDeviceCommandAsync (d.Id, entry.Command, new
 				{
 				value = entry.Value
 				}, token);
@@ -167,7 +170,8 @@ public sealed class PlacementUiTests
 		{
 		if (Placement (await Read (token)) == placement)
 			return;
-		var step = await _processor.ExecuteDeviceCommandAsync (_context.InstalledDriverId, "cp.driverConfiguration:getFirstConfigurationStep", new
+		await using var processor = await Connect (token);
+		var step = await processor.ExecuteDeviceCommandAsync (_context.InstalledDriverId, "cp.driverConfiguration:getFirstConfigurationStep", new
 			{
 			isReconfiguring = true
 			}, token);
@@ -180,7 +184,7 @@ public sealed class PlacementUiTests
 			if (matches.Length != 1 || matches[0].GetProperty ("Value").GetProperty ("ReadOnly").ValueKind != JsonValueKind.False)
 				throw new InvalidDataException ("Configuration item is not uniquely writable.");
 			}
-		var result = await _processor.ExecuteDeviceCommandAsync (_context.InstalledDriverId, "cp.driverConfiguration:applyConfigurationStep", new
+		var result = await processor.ExecuteDeviceCommandAsync (_context.InstalledDriverId, "cp.driverConfiguration:applyConfigurationStep", new
 			{
 			stepId = "Account",
 			configurationItemValues = values,
