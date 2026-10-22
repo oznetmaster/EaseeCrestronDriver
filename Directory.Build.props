@@ -2,7 +2,7 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><CodePage>65001</CodePage>
     <Deterministic>true</Deterministic><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Authors>Neil Colvin</Authors><Company>Neil Colvin</Company><Version>1.0.1</Version>
+    <Authors>Neil Colvin</Authors><Company>Neil Colvin</Company><Version>1.0.2</Version>
     <Copyright>Copyright © 2026 Neil Colvin</Copyright><IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">

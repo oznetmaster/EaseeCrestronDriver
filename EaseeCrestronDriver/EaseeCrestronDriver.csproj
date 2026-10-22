@@ -8,5 +8,24 @@
     <EmbeddedResource Include="EaseeCrestronDriver.json" />
     <InternalsVisibleTo Include="EaseeCrestronDriver.Tests" />
   </ItemGroup>
+  <PropertyGroup>
+    <IsPackable>true</IsPackable><IncludeBuildOutput>false</IncludeBuildOutput><SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <PackageType>CrestronHomeDriver</PackageType><PackageId>CrestronHomeDriver.Easee.Charger</PackageId>
+    <Description>Crestron Home Entity V2 Easee charger driver distribution containing the final .pkg payload.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile><PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/oznetmaster/EaseeCrestronDriver</RepositoryUrl><RepositoryType>git</RepositoryType><PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageProjectUrl>https://github.com/oznetmaster/EaseeCrestronDriver</PackageProjectUrl><PackageTags>crestron;crestron-home;driver;pkg;easee;charger;energy;smarthome</PackageTags>
+    <PackageReleaseNotes Condition="'$(PackageReleaseNotesFile)' != '' And Exists('$(PackageReleaseNotesFile)')">$([System.IO.File]::ReadAllText('$(PackageReleaseNotesFile)'))</PackageReleaseNotes>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../LICENSE" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="$(PackageDriverPkgPath)" Pack="true" PackagePath="/" Visible="false" Condition="'$(PackageDriverPkgPath)' != ''" />
+    <None Include="$(PackageDriverManifestPath)" Pack="true" PackagePath="/" Visible="false" Condition="'$(PackageDriverManifestPath)' != ''" />
+  </ItemGroup>
+  <Target Name="ValidateNuGetWrapperInputs" BeforeTargets="GenerateNuspec">
+    <Error Condition="'$(PackageDriverPkgPath)' == '' Or !Exists('$(PackageDriverPkgPath)')" Text="Provide the verified Release .pkg through PackageDriverPkgPath." />
+    <Error Condition="'$(PackageDriverManifestPath)' == '' Or !Exists('$(PackageDriverManifestPath)')" Text="Provide crestron-driver-package.json through PackageDriverManifestPath." />
+  </Target>
   <Import Project="../scripts/DriverPackage.targets" />
 </Project>

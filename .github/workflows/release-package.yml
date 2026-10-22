@@ -1,17 +1,18 @@
 name: Release Package
 on:
-  push:
-    tags: ['v*']
   workflow_dispatch:
     inputs:
       version:
-        description: Three-part release matching the manifest, with an optional prerelease suffix
+        description: Three-part version matching the prepared manifests
         required: true
         type: string
       publish:
-        description: Publish GitHub release assets; requires checkout of the exact existing release tag
+        description: Promote an already validated staging run from its exact existing release tag
         type: boolean
         default: false
+      staged_run_id:
+        description: Successful preparation run containing the exact validated Release assets; required for publication
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -19,47 +20,32 @@ concurrency:
   cancel-in-progress: false
 jobs:
   prepare:
+    if: ${{ !inputs.publish }}
     runs-on: windows-latest
     timeout-minutes: 45
     permissions:
       contents: read
       actions: read
       checks: read
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Resolve release and exact tag
+      - name: Resolve prepared version
         id: version
         shell: pwsh
         env:
           REQUESTED_VERSION: ${{ inputs.version }}
-          PUBLISH: ${{ github.event_name == 'push' || inputs.publish }}
         run: |
-          $tag = if ($env:GITHUB_EVENT_NAME -eq 'push') { $env:GITHUB_REF_NAME } else { 'v' + ($env:REQUESTED_VERSION -replace '^v','') }
-          $selected = ./scripts/Get-DriverReleaseVersion.ps1 -ManifestPath EaseeCrestronDriver/EaseeCrestronDriver.json -Tag $tag -RequireTag
-          if ($env:PUBLISH -eq 'true') {
-            if ($env:GITHUB_REF_TYPE -ne 'tag' -or $env:GITHUB_REF_NAME -cne $selected.Tag) { throw 'Publication requires checkout of the exact existing release tag.' }
-            $tagCommit = git rev-parse "$($selected.Tag)^{commit}"
-            $head = git rev-parse HEAD
-            if ($LASTEXITCODE -ne 0 -or $tagCommit -cne $head) { throw 'Release tag does not identify this source.' }
-            $heading = '# EaseeCrestronDriver ' + $selected.PackageVersion
-            if ((Get-Content RELEASE-NOTES.md -TotalCount 1) -cne $heading) { throw 'Prepare release notes for this version before publication.' }
-          }
+          $selected = ./scripts/Get-DriverReleaseVersion.ps1 -ManifestPath EaseeCrestronDriver/EaseeCrestronDriver.json -Tag ('v'+$env:REQUESTED_VERSION) -RequireTag
           "version=$($selected.PackageVersion)" >> $env:GITHUB_OUTPUT
-          "tag=$($selected.Tag)" >> $env:GITHUB_OUTPUT
       - name: Require current hosted and App-reported processor checks
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
           REQUIRED_RELEASE_CHECKS: ${{ vars.RELEASE_REQUIRED_CHECKS }}
-          REQUIRED_HOSTED_WORKFLOWS: '["tests.yml","workflow-discovery.yml"]'
-        run: |
-          if ([string]::IsNullOrWhiteSpace($env:REQUIRED_RELEASE_CHECKS)) { throw 'Configure the processor-check release gate before using this workflow.' }
-          ./.github/scripts/Wait-RequiredReleaseChecks.ps1
+          REQUIRED_HOSTED_WORKFLOWS: '["tests.yml","workflow-discovery.yml","nunit5-policy.yml"]'
+        run: ./.github/scripts/Wait-RequiredReleaseChecks.ps1
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
@@ -73,15 +59,13 @@ jobs:
           persist-credentials: false
       - name: Install pinned ILRepack
         run: dotnet tool install --global dotnet-ilrepack --version 2.0.45
-      - name: Verify release guard behavior
+      - name: Verify release guards and run offline tests
         shell: pwsh
         run: |
           ./.github/scripts/Test-RequiredReleaseChecks.ps1
           ./scripts/Test-ReleaseVersion.ps1
-      - name: Run offline tests
-        shell: pwsh
-        run: ./scripts/Test-Offline.ps1
-      - name: Build and verify driver/test packages and documents
+          ./scripts/Test-Offline.ps1
+      - name: Build verified Release packages and NuGet distribution
         shell: pwsh
         env:
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
@@ -96,9 +80,88 @@ jobs:
         with:
           name: release-offline-results
           path: TestResults/offline/*.trx
+  promote:
+    if: inputs.publish
+    runs-on: windows-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      checks: read
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+      tag: ${{ steps.validate.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require exact tag and successful preparation provenance
+        id: validate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_VERSION: ${{ inputs.version }}
+          STAGED_RUN_ID: ${{ inputs.staged_run_id }}
+        run: |
+          $ErrorActionPreference='Stop'
+          if($env:STAGED_RUN_ID -notmatch '^[0-9]+$'){throw 'Supply the successful staging run ID.'}
+          $selected=./scripts/Get-DriverReleaseVersion.ps1 -ManifestPath EaseeCrestronDriver/EaseeCrestronDriver.json -Tag ('v'+$env:REQUESTED_VERSION) -RequireTag
+          if($env:GITHUB_REF_TYPE -ne 'tag' -or $env:GITHUB_REF_NAME -cne $selected.Tag){throw 'Publication requires the exact existing release tag.'}
+          $head=(git rev-parse HEAD).Trim();$tagHead=(git rev-parse "$($selected.Tag)^{commit}").Trim()
+          if($LASTEXITCODE -ne 0 -or $head -cne $tagHead){throw 'The release tag differs from this source.'}
+          if((Get-Content RELEASE-NOTES.md -TotalCount 1) -cne ('# EaseeCrestronDriver '+$selected.PackageVersion)){throw 'Release notes are not prepared.'}
+          $run=gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:STAGED_RUN_ID" | ConvertFrom-Json
+          if($LASTEXITCODE -ne 0 -or $run.head_repository.full_name -cne $env:GITHUB_REPOSITORY -or $run.head_sha -cne $head -or $run.path -cne '.github/workflows/release-package.yml' -or $run.event -cne 'workflow_dispatch' -or $run.conclusion -cne 'success'){throw 'Untrusted, failed or different-source preparation run.'}
+          $jobs=gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:STAGED_RUN_ID/jobs" | ConvertFrom-Json
+          if($LASTEXITCODE -ne 0 -or @($jobs.jobs|Where-Object {$_.name -ceq 'prepare' -and $_.conclusion -ceq 'success'}).Count -ne 1){throw 'The selected run did not successfully build Release assets.'}
+          gh run download $env:STAGED_RUN_ID --repo $env:GITHUB_REPOSITORY --name release-assets --dir artifacts/release
+          if($LASTEXITCODE -ne 0){throw 'Cannot retrieve the selected preparation artifact.'}
+          ./scripts/Assert-StagedRelease.ps1 -Directory artifacts/release -Version $selected.PackageVersion -Commit $head -BuildRunId $env:STAGED_RUN_ID
+          "version=$($selected.PackageVersion)" >> $env:GITHUB_OUTPUT
+          "tag=$($selected.Tag)" >> $env:GITHUB_OUTPUT
+      - name: Require current source checks again before publication
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUIRED_RELEASE_CHECKS: ${{ vars.RELEASE_REQUIRED_CHECKS }}
+          REQUIRED_HOSTED_WORKFLOWS: '["tests.yml","workflow-discovery.yml","nunit5-policy.yml"]'
+        run: ./.github/scripts/Wait-RequiredReleaseChecks.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: artifacts/release/*
+          if-no-files-found: error
+  publish-nuget:
+    if: inputs.publish
+    needs: promote
+    runs-on: windows-latest
+    environment: nuget
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          path: artifacts/release
+      - name: Authenticate to NuGet using GitHub OIDC
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+      - name: Publish the verified distribution wrapper
+        shell: pwsh
+        env:
+          NUGET_TEMP_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+          RELEASE_VERSION: ${{ needs.promote.outputs.version }}
+        run: ./scripts/Publish-DriverNuGet.ps1 -Directory artifacts/release -Version $env:RELEASE_VERSION
   publish:
-    if: github.event_name == 'push' || inputs.publish
-    needs: prepare
+    if: inputs.publish
+    needs: [promote, publish-nuget]
     runs-on: ubuntu-latest
     environment: github-release
     permissions:
@@ -109,11 +172,11 @@ jobs:
         with:
           name: release-assets
           path: artifacts/release
-      - name: Publish the already verified assets
+      - name: Publish the already verified GitHub assets
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
-          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+          RELEASE_TAG: ${{ needs.promote.outputs.tag }}
+          RELEASE_VERSION: ${{ needs.promote.outputs.version }}
         run: |
           extra=()
           if [[ "$RELEASE_VERSION" == *-* ]]; then extra+=(--prerelease); fi

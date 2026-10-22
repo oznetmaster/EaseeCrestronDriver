@@ -18,6 +18,10 @@ Use the [Crestron Home Driver Feed Installer](https://github.com/oznetmaster/Cre
 
 If you prefer to install manually, use the attached `.pkg` asset from the relevant [GitHub Release](https://github.com/oznetmaster/EaseeCrestronDriver/releases/latest). The automatic GitHub `Source code (zip)` and `Source code (tar.gz)` assets are repository snapshots, not installable Crestron driver packages.
 
+NuGet package availability: this driver is also distributed as the [`CrestronHomeDriver.Easee.Charger`](https://www.nuget.org/packages/CrestronHomeDriver.Easee.Charger) NuGet package. This package conforms to the **Crestron Home Driver NuGet Publishing Standard v1**. It is a distribution wrapper for the final `.pkg` artifact, includes the required `crestron-driver-package.json` manifest, and is not intended as a direct DLL reference package.
+
+Crestron Home Driver NuGet Publishing Standard v1 is **not** an official Crestron product or specification. It is an open source packaging standard created to facilitate community distribution and discovery of Crestron Home drivers through NuGet.
+
 For this driver, download **EaseeCrestronDriver.pkg**. The separate `EaseeCrestronDriver.ProcessorTests.pkg` is a test host, not the charger driver.
 
 1. Connect to the processor using SFTP and your processor credentials. Upload `EaseeCrestronDriver.pkg` to `/user/ThirdPartyDrivers/Import` and allow the import to finish.
@@ -66,24 +70,12 @@ Use the existing HPNEIL worker and public CrestronHomeNUnit workflow. HPNEIL and
 
 ## Validation status
 
-The release acceptance and requirement-by-requirement history are in [VALIDATION.md](VALIDATION.md). Version 1.0.1 corrects the connection event identifier; the property remains `vehicleConnected`, while the event is `vehicleConnectedEvent`. The user has confirmed actual vehicle charging initiated from the panel. Version 1.0.0 followed human visual approval of the final labels on 22 October 2026, with a repeat manual UI cycle explicitly waived by the user. Required exact-source hosted and processor checks gate publication. The historical `Verify-ValidatedCandidate.ps1` tool compares the original development candidate, so later source changes intentionally fail that comparison.
+The current suites contain **54 core and eight contract tests** on desktop, a **70-test native processor suite**, and separate opt-in live/UI suites. The release gates require passing exact-source hosted and processor checks. Public workflows never receive charger credentials.
 
-On 21 October 2026, candidate **0.1.000.0006** passed the following checks on HPNEIL and the .241 processor in Office:
+The connection-ID fix was loaded on the review processor with no new definition errors, preserved selections/placement and continued charging feedback. The user also confirmed actual vehicle charging initiated from the panel. These observations are retained separately from earlier tests with a fully charged car; no energy-delivery claim is retroactively added to those tests.
 
-| Validation | Passed |
-| --- | ---: |
-| Desktop NUnit tests | 61 |
-| Processor NUnit tests | 69 |
-| Read-only processor live tests | 4 |
-| Installed-driver checks | 6 |
-| Actual-app UI scenarios | 4 |
+See [VALIDATION.md](VALIDATION.md) for requirements, candidate identities and limits, [DEVELOPMENT-HISTORY.md](DEVELOPMENT-HISTORY.md) for historical runs, and [MODEL-COMPARISON.md](MODEL-COMPARISON.md) for alignment with the model. Live current-limit and cable-lock writes remain unexercised. Changes to tests or documentation alone can use the separate processor-test release workflow without publishing a new driver.
 
-The UI scenarios separately covered **Room page**, **Home page**, **Both**, and read-only site/charger picker inspection in Crestron Home 4.11.1+pr. Placement checks verified presence/absence, readable status and power, navigation, authorized start/stop requests and final noncharging state. Home navigation was checked to issue no charger command. Picker checks verified the complete expected option lists and selected states without selecting an option. Every successful run confirmed Home restoration, the unchanged candidate payload, cleanup and reservation release. The selected site and charger were preserved, and Room-only placement was restored.
-
-The exact package SHA256 is `09d94c09572869d8919683cfe4bfc5a985b383276b498b468e88fb7a3306cb7b`. The local manifest was synchronized from the exact embedded resource in that package. These records identify the historical candidate; subsequent label and version changes are described in VALIDATION.md. The validated package and retained evidence are staged in `artifacts/validated/0.1.000.0006/`. Debug packaging advances the revision; rebuilding does not reproduce this already validated package automatically.
-
-Earlier failed and blocked runs remain failed results. Cleanup is documented in their workflow results or separate reconciliation receipts. During build investigation, a previously blocked driver DLL later passed unchanged. A UI binary remained blocked in controlled and crossed-folder comparisons. Normalized source paths now make the UI harness builds reproducible across source directories. The final unsigned UI assembly ran with Smart App Control enforced; no signing certificate or security-policy change was used. The cause of Windows' earlier differing verdicts remains unproved.
-
-Start/stop request acceptance with the fully charged vehicle does not demonstrate energy delivery. Live current-limit and cable-lock writes remain unexercised. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE-NOTES.md](RELEASE-NOTES.md) for the public release notes. Published checksums identify the Release assets separately from the retained development candidates.
+Easee and Crestron product names belong to their respective owners. This is an independent community driver and is not affiliated with or endorsed by Easee or Crestron.
 
 Copyright Neil Colvin. MIT License with Commons Clause; see LICENSE.

@@ -1,0 +1,63 @@
+name: Validate release assets
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Published three-part driver release
+        required: true
+        type: string
+  workflow_run:
+    workflows: ["Release Package"]
+    types: [completed]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Establish whether the run published a release
+        id: published
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRIGGER_RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          if($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch'){ 'value=true' >> $env:GITHUB_OUTPUT; exit 0 }
+          $jobs=gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:TRIGGER_RUN/jobs" | ConvertFrom-Json
+          if($LASTEXITCODE -ne 0){throw 'Cannot inspect publication outcome.'}
+          "value=$(@($jobs.jobs|Where-Object {$_.name -ceq 'publish' -and $_.conclusion -ceq 'success'}).Count -eq 1)".ToLowerInvariant() >> $env:GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+        if: steps.published.outputs.value == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: Verify published GitHub and NuGet payload identity
+        if: steps.published.outputs.value == 'true'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          $ErrorActionPreference='Stop'
+          $manifest=Get-Content EaseeCrestronDriver/EaseeCrestronDriver.json -Raw|ConvertFrom-Json
+          $version=if($env:REQUESTED_VERSION){$env:REQUESTED_VERSION}else{([version]$manifest.GeneralInformation.DriverVersion).ToString(3)}
+          if($version -notmatch '^\d+\.\d+\.\d+$'){throw 'Invalid release version.'}
+          gh release download "v$version" --repo $env:GITHUB_REPOSITORY --dir artifacts/published
+          if($LASTEXITCODE -ne 0){throw 'Cannot download the published release.'}
+          $source=Get-Content artifacts/published/SourceIdentity.json -Raw|ConvertFrom-Json
+          $tagCommit=gh api "repos/$env:GITHUB_REPOSITORY/commits/v$version" --jq .sha
+          if($LASTEXITCODE -ne 0){throw 'Cannot resolve the release tag.'}
+          ./scripts/Assert-StagedRelease.ps1 -Directory artifacts/published -Version $version -Commit $tagCommit
+          $name="crestronhomedriver.easee.charger.$version.nupkg"
+          $url="https://api.nuget.org/v3-flatcontainer/crestronhomedriver.easee.charger/$version/$name"
+          $download=Join-Path $env:RUNNER_TEMP $name
+          for($attempt=0;$attempt -lt 18;$attempt++){
+            $response=Invoke-WebRequest -Uri $url -OutFile $download -PassThru -SkipHttpErrorCheck -TimeoutSec 20
+            if($response.StatusCode -eq 200){break}
+            if($response.StatusCode -ne 404 -or $attempt -eq 17){throw 'The published NuGet package is unavailable.'}
+            Start-Sleep -Seconds 20
+          }
+          ./scripts/Assert-DriverNuGetPackage.ps1 -PackagePath $download -DriverPackagePath artifacts/published/EaseeCrestronDriver.pkg -Version $version
+          'Published GitHub and NuGet assets contain the same verified driver payload.' >> $env:GITHUB_STEP_SUMMARY

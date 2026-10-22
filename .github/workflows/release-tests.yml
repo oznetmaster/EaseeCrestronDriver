@@ -1,0 +1,79 @@
+name: Release processor tests
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Independent test-package version (major.minor.patch)
+        required: true
+        type: string
+      publish:
+        description: Create a processor-tests-vVERSION GitHub release; no driver NuGet publication
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  actions: read
+  checks: read
+concurrency:
+  group: easee-processor-test-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      actions: read
+      checks: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require reviewed default-branch source and release checks
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TEST_VERSION: ${{ inputs.version }}
+          REQUIRED_RELEASE_CHECKS: ${{ vars.RELEASE_REQUIRED_CHECKS }}
+          REQUIRED_HOSTED_WORKFLOWS: '["tests.yml","workflow-discovery.yml","nunit5-policy.yml"]'
+        run: |
+          if($env:GITHUB_REF -cne 'refs/heads/master' -or $env:TEST_VERSION -notmatch '^\d+\.\d+\.\d+$'){throw 'Run from master with a three-part test-host version.'}
+          ./.github/scripts/Wait-RequiredReleaseChecks.ps1
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
+            8.0.x
+      - uses: actions/checkout@v4
+        with:
+          repository: oznetmaster/CrestronHomeNUnit
+          ref: d268167a15df665acfb4506a53d238cea833a42f
+          path: .processor-sdk
+          persist-credentials: false
+      - name: Install pinned tools and stage test-host distribution
+        shell: pwsh
+        env:
+          TEST_VERSION: ${{ inputs.version }}
+        run: |
+          dotnet tool install --global dotnet-ilrepack --version 2.0.45
+          if($LASTEXITCODE -ne 0){throw 'ILRepack installation failed.'}
+          ./scripts/Stage-ProcessorTestRelease.ps1 -Version $env:TEST_VERSION -SdkRoot "$env:GITHUB_WORKSPACE/.processor-sdk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: processor-test-release
+          path: artifacts/processor-release/*
+          if-no-files-found: error
+      - name: Publish processor-only GitHub assets
+        if: inputs.publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TEST_VERSION: ${{ inputs.version }}
+        run: |
+          $commit=(git rev-parse HEAD).Trim()
+          $tag='processor-tests-v'+$env:TEST_VERSION
+          $notes=Join-Path $env:RUNNER_TEMP 'processor-release-notes.txt'
+          "Processor test host $env:TEST_VERSION from source $commit. This release contains test tooling and documentation only; it does not publish or update the driver or its NuGet distribution." | Set-Content -LiteralPath $notes
+          $assets=@(Get-ChildItem artifacts/processor-release -File|ForEach-Object FullName)
+          gh release create $tag @assets --target $commit --title "EaseeCrestronDriver processor tests $env:TEST_VERSION" --notes-file $notes --latest=false
+          if($LASTEXITCODE -ne 0){throw 'Processor-only release failed.'}

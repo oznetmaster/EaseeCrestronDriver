@@ -11,7 +11,7 @@
     <BuildProcessorTestPackages Condition="'$(BuildProcessorTestPackages)' == ''">false</BuildProcessorTestPackages>
     <AssemblyName>EaseeCrestronDriver.ProcessorTests</AssemblyName>
     <RootNamespace>CrestronHomeNUnit.Driver</RootNamespace>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
   <Import Project="$(ProcessorTestSdkRoot)\ProcessorTestPackage\ProcessorTestPackage.props" Condition="'$(BuildProcessorTestPackages)' == 'true' And Exists('$(ProcessorTestSdkRoot)\ProcessorTestPackage\ProcessorTestPackage.props')" />
   <ItemGroup Condition="'$(BuildProcessorTestPackages)' == 'true'">
@@ -43,5 +43,8 @@
     <ItemGroup>
       <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(ReferenceCopyLocalPaths.NuGetPackageId)').ToLowerInvariant().StartsWith('microsoft.testing.')) Or $([System.String]::Copy('%(ReferenceCopyLocalPaths.NuGetPackageId)').ToLowerInvariant().StartsWith('microsoft.testplatform.')) Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Microsoft.ApplicationInsights' Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Microsoft.CodeCoverage' Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'NUnit3TestAdapter' Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'Newtonsoft.Json' Or '%(ReferenceCopyLocalPaths.NuGetPackageId)' == 'log4net'" />
     </ItemGroup>
+  </Target>
+  <Target Name="StageEaseeTestDependencyLicences" AfterTargets="StagePackageFiles" BeforeTargets="ValidateProcessorPackage;PackageDriver" Condition="'$(BuildProcessorTestPackages)' == 'true'">
+    <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)/../scripts/Stage-Licences.ps1&quot; -AssetsFile &quot;$(ProjectAssetsFile)&quot; -OutputDirectory &quot;$(TargetDir)patched/IncludeInPkg/Licenses/Dependencies&quot;" />
   </Target>
 </Project>

@@ -1,6 +1,13 @@
 # Changelog
 
-## 1.0.1 — 2026-10-22
+## 1.0.2 — 2026-10-22
+
+- Publish the `CrestronHomeDriver.Easee.Charger` NuGet distribution wrapper with the v1 community manifest, required metadata and exact final driver payload, using GitHub OIDC trusted publishing.
+- Promote immutable staged release assets after candidate validation; verify published GitHub/NuGet payload identity.
+- Complete model-based installation documentation, NUnit policy, independent processor-test release workflow and test-host dependency licence indexing. See MODEL-COMPARISON.md for the full review.
+- Include the connection event-ID correction tested in the installed 1.0.1 development fix below.
+
+## 1.0.1 — installed development fix — 2026-10-22
 
 - Fix the duplicate connection property/event identifier that caused Home's programming adapter to throw `An item with the same key has already been added. Key: vehicleConnected`.
 - Preserve the `vehicleConnected` property and give the event the unique `vehicleConnectedEvent` ID; its display name remains “Vehicle connected”. Existing programming references to the old event ID must be reselected.

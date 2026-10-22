@@ -27,10 +27,12 @@ foreach ($package in $packages) {
     & (Join-Path $PSScriptRoot 'Assert-DriverPackageVersion.ps1') -PackagePath $path -ManifestPath $manifest -ReleaseVersion $Version
     Copy-Item -LiteralPath $path -Destination $output
 }
+& (Join-Path $PSScriptRoot 'Pack-DriverNuGet.ps1') -DriverPackagePath (Join-Path $output 'EaseeCrestronDriver.pkg') -Version $Version -OutputDirectory $output
+& (Join-Path $PSScriptRoot 'Test-DriverNuGetPackage.ps1') -PackagePath (Join-Path $output ('CrestronHomeDriver.Easee.Charger.'+$Version+'.nupkg')) -DriverPackagePath (Join-Path $output 'EaseeCrestronDriver.pkg') -Version $Version
 $documentation = Join-Path $output ('EaseeCrestronDriver-' + $Version + '-Documentation.zip')
 $zip = [IO.Compression.ZipFile]::Open($documentation, [IO.Compression.ZipArchiveMode]::Create)
 try {
-    foreach ($name in @('README.md','CHANGELOG.md','RELEASE-NOTES.md','LICENSE','VALIDATION.md','PUBLISHING.md','ProcessorTestSdk.lock.json')) {
+    foreach ($name in @('README.md','CHANGELOG.md','RELEASE-NOTES.md','LICENSE','VALIDATION.md','PUBLISHING.md','MODEL-COMPARISON.md','DEVELOPMENT-HISTORY.md','validation/Workflow/README.md','ProcessorTestSdk.lock.json')) {
         $null = [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, (Join-Path $root $name), $name)
     }
     $driver = [IO.Compression.ZipFile]::OpenRead((Join-Path $output 'EaseeCrestronDriver.pkg'))
@@ -41,7 +43,9 @@ try {
         }
     } finally { $driver.Dispose() }
 } finally { $zip.Dispose() }
-[ordered]@{ Repository='oznetmaster/EaseeCrestronDriver'; Commit=$commit; ReleaseVersion=$Version; DriverVersion=($selected.DriverReleaseVersion+'.0'); ProcessorSdkRevision=$sdkRevision; HardwareGate='Exact source check; independently rebuilt Release bytes require separate candidate validation.' } |
+[ordered]@{ Repository='oznetmaster/EaseeCrestronDriver'; Commit=$commit; ReleaseVersion=$Version; Configuration='Release'; BuildRunId=[string]$env:GITHUB_RUN_ID; DriverVersion=($selected.DriverReleaseVersion+'.0'); ProcessorSdkRevision=$sdkRevision; HardwareGate='Exact source check; independently rebuilt Release bytes require separate candidate validation.' } |
     ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'SourceIdentity.json')
 $hashes = Get-ChildItem -LiteralPath $output -File | Sort-Object Name | ForEach-Object { (Get-FileHash -LiteralPath $_.FullName).Hash.ToLowerInvariant() + '  ' + $_.Name }
 [IO.File]::WriteAllLines((Join-Path $output 'SHA256SUMS.txt'), $hashes)
+
+& (Join-Path $PSScriptRoot 'Assert-StagedRelease.ps1') -Directory $output -Version $Version -Commit $commit -BuildRunId ([string]$env:GITHUB_RUN_ID)
