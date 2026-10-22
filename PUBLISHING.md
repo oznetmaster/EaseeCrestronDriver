@@ -26,6 +26,8 @@ The NuGet job uses environment `nuget`, `id-token: write`, `NuGet/login@v1` and 
 
 GitHub assets include the main and processor `.pkg` files, NuGet package, distribution manifest, documentation ZIP, source identity and SHA256SUMS. The documentation includes original packaged notices. Post-publication validation independently downloads GitHub/NuGet assets and checks payload identity. NuGet upload acceptance precedes public validation and indexing; the check allows 65 minutes for that documented processing window and fails unexpected HTTP responses immediately. A delayed check can be dispatched again with the published version, without rebuilding or republishing the release. No raw hardware logs, credentials, account profiles or resolved private plans are published.
 
+The immutable 1.0.2 NuGet README contains repository-relative documentation links that NuGet does not resolve. Its installation, GitHub Release and project links work; use the repository README for the linked technical documentation. The default-branch README now uses absolute GitHub links for subsequent packages. This documentation correction does not change the published driver or package.
+
 ## Processor-only releases
 
 Use **Release processor tests** from reviewed `master` for test-only changes. Its independent three-part version controls the test host, with the published SDK pinned and all source gates required. A dry run stages the test package, documentation, prepared test manifest, source identity and checksums. With `publish=true`, it creates `processor-tests-vVERSION` on the reviewed source and a GitHub release with `latest=false`. It does not publish or update the driver or either NuGet package. Runtime changes require a product release instead.

@@ -36,7 +36,7 @@ The password is retained for automatic account recovery. Enter it only in the dr
 
 Import the new `.pkg`, then apply the available driver update to the existing **Easee Charger** instance in Setup. Importing a package alone does not update the installed instance. Review the account configuration, selected site/charger, room and tile placement after updating, and confirm that status and power are live.
 
-Version **1.0.1** uses `vehicleConnectedEvent` for the programmable **Vehicle connected** event; the `vehicleConnected` state property is unchanged. Reselect any existing programming reference to the old event ID, then verify the relevant automation. The displayed event name remains **Vehicle connected**.
+Public releases **1.0.2 and later** use `vehicleConnectedEvent` for the programmable **Vehicle connected** event; the `vehicleConnected` state property is unchanged. Reselect any existing programming reference to the old event ID, then verify the relevant automation. The displayed event name remains **Vehicle connected**.
 
 ## Setup and controls
 
@@ -48,7 +48,7 @@ All exposed properties, commands and events use entity attributes. Programmable 
 
 ## Build and test
 
-CI and release setup are documented in [PUBLISHING.md](PUBLISHING.md). The shipping solution remains net472; desktop workflow, discovery and Android tools live separately under `validation/`.
+CI and release setup are documented in [PUBLISHING.md](https://github.com/oznetmaster/EaseeCrestronDriver/blob/master/PUBLISHING.md). The shipping solution remains net472; desktop workflow, discovery and Android tools live separately under `validation/`.
 
 Requires Windows, .NET SDK 10, and `dotnet-ilrepack` 2.0.45. ManifestUtil 29.0.10 is restored from NuGet. The processor package consumes the pinned published CrestronHomeNUnit 3.0.0 SDK described in `ProcessorTestSdk.lock.json`.
 
@@ -64,7 +64,7 @@ NUnit 5 suites cover state mapping, unknown data, observation ordering, commands
 
 Live start/stop tests require separate explicit enablement. They record intent before execution, issue no automatic control retries and verify a final noncharging state. A full vehicle can remain Completed at zero power; a passing request test does not prove energy delivery. Live current-limit and cable-lock changes have not been authorized or exercised.
 
-The repeatable HPNEIL-only entry point is documented in [validation/Workflow/README.md](validation/Workflow/README.md). It uses the published public SDK for native and pinned installed-driver UI workflows, requires private plans and explicit live/update/start-stop opt-ins, and retains uncertain reservations. Eight build/plan-validation checks passed without entering a hardware workflow.
+The repeatable HPNEIL-only entry point is documented in [validation/Workflow/README.md](https://github.com/oznetmaster/EaseeCrestronDriver/blob/master/validation/Workflow/README.md). It uses the published public SDK for native and pinned installed-driver UI workflows, requires private plans and explicit live/update/start-stop opt-ins, and retains uncertain reservations. Eight build/plan-validation checks passed without entering a hardware workflow.
 
 Use the existing HPNEIL worker and public CrestronHomeNUnit workflow. HPNEIL and the .241/.244 processor pool are shared: acquire the machine reservation and public processor lease, retain uncertain ownership for reconciliation, and verify cleanup before release. Never reroute to SCOTTISHNEIL or change runner labels. Private account files, profiles, initial configuration and test evidence remain outside the checkout.
 
@@ -74,7 +74,7 @@ The current suites contain **54 core and eight contract tests** on desktop, a **
 
 The connection-ID fix was loaded on the review processor with no new definition errors, preserved selections/placement and continued charging feedback. The user also confirmed actual vehicle charging initiated from the panel. These observations are retained separately from earlier tests with a fully charged car; no energy-delivery claim is retroactively added to those tests.
 
-See [VALIDATION.md](VALIDATION.md) for requirements, candidate identities and limits, [DEVELOPMENT-HISTORY.md](DEVELOPMENT-HISTORY.md) for historical runs, and [MODEL-COMPARISON.md](MODEL-COMPARISON.md) for alignment with the model. Live current-limit and cable-lock writes remain unexercised. Changes to tests or documentation alone can use the separate processor-test release workflow without publishing a new driver.
+See [VALIDATION.md](https://github.com/oznetmaster/EaseeCrestronDriver/blob/master/VALIDATION.md) for requirements, candidate identities and limits, [DEVELOPMENT-HISTORY.md](https://github.com/oznetmaster/EaseeCrestronDriver/blob/master/DEVELOPMENT-HISTORY.md) for historical runs, and [MODEL-COMPARISON.md](https://github.com/oznetmaster/EaseeCrestronDriver/blob/master/MODEL-COMPARISON.md) for alignment with the model. Live current-limit and cable-lock writes remain unexercised. Changes to tests or documentation alone can use the separate processor-test release workflow without publishing a new driver.
 
 Easee and Crestron product names belong to their respective owners. This is an independent community driver and is not affiliated with or endorsed by Easee or Crestron.
 
