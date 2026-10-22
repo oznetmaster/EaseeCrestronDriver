@@ -24,7 +24,7 @@ The NuGet job uses environment `nuget`, `id-token: write`, `NuGet/login@v1` and 
 
 `Assert-DriverNuGetPackage.ps1` verifies metadata, required tags, manifest fields/version, README/licence, exactly one root payload, no library DLL/dependencies and matching driver SHA256. `Test-DriverNuGetPackage.ps1` exercises the actual generated package and four corrupt-package cases. `Assert-StagedRelease.ps1` checks the complete release asset set, provenance and hashes.
 
-GitHub assets include the main and processor `.pkg` files, NuGet package, distribution manifest, documentation ZIP, source identity and SHA256SUMS. The documentation includes original packaged notices. Post-publication validation independently downloads GitHub/NuGet assets and checks payload identity. No raw hardware logs, credentials, account profiles or resolved private plans are published.
+GitHub assets include the main and processor `.pkg` files, NuGet package, distribution manifest, documentation ZIP, source identity and SHA256SUMS. The documentation includes original packaged notices. Post-publication validation independently downloads GitHub/NuGet assets and checks payload identity. NuGet upload acceptance precedes public validation and indexing; the check allows 65 minutes for that documented processing window and fails unexpected HTTP responses immediately. A delayed check can be dispatched again with the published version, without rebuilding or republishing the release. No raw hardware logs, credentials, account profiles or resolved private plans are published.
 
 ## Processor-only releases
 

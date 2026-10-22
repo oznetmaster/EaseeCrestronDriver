@@ -16,7 +16,7 @@ jobs:
   validate:
     if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 75
     steps:
       - name: Establish whether the run published a release
         id: published
@@ -53,10 +53,18 @@ jobs:
           $name="crestronhomedriver.easee.charger.$version.nupkg"
           $url="https://api.nuget.org/v3-flatcontainer/crestronhomedriver.easee.charger/$version/$name"
           $download=Join-Path $env:RUNNER_TEMP $name
-          for($attempt=0;$attempt -lt 18;$attempt++){
+          # NuGet can take up to an hour to validate and index an accepted upload.
+          $deadline=[DateTimeOffset]::UtcNow.AddMinutes(65)
+          $announcedWaiting=$false
+          while($true){
             $response=Invoke-WebRequest -Uri $url -OutFile $download -PassThru -SkipHttpErrorCheck -TimeoutSec 20
             if($response.StatusCode -eq 200){break}
-            if($response.StatusCode -ne 404 -or $attempt -eq 17){throw 'The published NuGet package is unavailable.'}
+            if($response.StatusCode -ne 404){throw "The published NuGet package returned HTTP $($response.StatusCode)."}
+            if([DateTimeOffset]::UtcNow -ge $deadline){throw 'The published NuGet package remained unavailable after the validation and indexing window.'}
+            if(-not $announcedWaiting){
+              Write-Output 'NuGet accepted the upload; waiting for public validation and indexing.'
+              $announcedWaiting=$true
+            }
             Start-Sleep -Seconds 20
           }
           ./scripts/Assert-DriverNuGetPackage.ps1 -PackagePath $download -DriverPackagePath artifacts/published/EaseeCrestronDriver.pkg -Version $version
