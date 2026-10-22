@@ -135,7 +135,7 @@ public sealed partial class EaseeDriver
 	[EntityPropertyMetadata (ExtensionUiProperty = true, Programmable = true)]
 	public bool CableSettingKnown { get; private set => Update ("cableSettingKnown", value, ref field); } = false;
 
-	/// <summary>Gets reported temporary current limit in amperes.</summary>
+	/// <summary>Gets the reported dynamic charger current limit in amperes.</summary>
 	[EntityProperty (Id = "currentLimitDisplay")]
 	[EntityPropertyMetadata (ExtensionUiProperty = true, Programmable = false)]
 	public string CurrentLimitDisplay { get; private set => Update ("currentLimitDisplay", value, ref field); } = "--";

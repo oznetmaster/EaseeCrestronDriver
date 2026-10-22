@@ -12,10 +12,10 @@
   "Site": "Site",
   "Charger": "Charger",
   "KeepCableLocked": "Keep charging cable locked",
-  "CurrentLimit": "Temporary current limit",
+  "CurrentLimit": "Charging current limit",
   "SerialNumber": "Serial number",
   "Refresh": "Refresh status",
-  "RequestedAmps": "Current limit (A)",
-  "RequestedMinutes": "Duration (minutes)",
+  "RequestedAmps": "Temporary limit (A)",
+  "RequestedMinutes": "Override duration (min)",
   "ApplyCurrent": "Apply temporary limit"
 }

@@ -79,7 +79,7 @@ internal sealed record ChargerReading
 			ChargerMode.Disconnected => "Not connected",
 			ChargerMode.Charging => "Charging",
 			ChargerMode.Completed => "Not charging",
-			ChargerMode.AwaitingAuthentication => "Awaiting authentication",
+			ChargerMode.AwaitingAuthentication => "Awaiting charging authorization",
 			ChargerMode.Deauthenticating => "Stopping",
 			ChargerMode.Error => "Charger error",
 			_ => "Not charging"

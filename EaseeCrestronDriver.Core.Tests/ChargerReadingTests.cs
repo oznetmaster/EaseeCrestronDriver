@@ -51,7 +51,7 @@ internal sealed class ChargerReadingTests
 			}).TileStatus, Is.EqualTo ("7.2kW On"));
 		}
 	[TestCase (ChargerMode.Completed, "Not charging")]
-	[TestCase (ChargerMode.AwaitingAuthentication, "Awaiting authentication")]
+	[TestCase (ChargerMode.AwaitingAuthentication, "Awaiting charging authorization")]
 	public void IdleConnectedCarShowsCompactPowerAndStateWithoutLosingTheFullStatus (ChargerMode mode, string detail)
 		{
 		var reading = new ChargerReading { Mode = mode, Online = true, PowerKilowatts = 0 };
