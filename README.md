@@ -38,7 +38,7 @@ Use the existing HPNEIL worker and public CrestronHomeNUnit workflow. HPNEIL and
 
 ## Validation status
 
-The release acceptance and requirement-by-requirement history are in [VALIDATION.md](VALIDATION.md). Version 1.0.0 follows human visual approval of the final labels on 22 October 2026, with a repeat manual UI cycle explicitly waived by the user. Required exact-source hosted and processor checks gate publication. The historical `Verify-ValidatedCandidate.ps1` tool compares the original development candidate, so later source changes intentionally fail that comparison.
+The release acceptance and requirement-by-requirement history are in [VALIDATION.md](VALIDATION.md). Version 1.0.1 corrects the connection event identifier; the property remains `vehicleConnected`, while the event is `vehicleConnectedEvent`. The user has confirmed actual vehicle charging initiated from the panel. Version 1.0.0 followed human visual approval of the final labels on 22 October 2026, with a repeat manual UI cycle explicitly waived by the user. Required exact-source hosted and processor checks gate publication. The historical `Verify-ValidatedCandidate.ps1` tool compares the original development candidate, so later source changes intentionally fail that comparison.
 
 On 21 October 2026, candidate **0.1.000.0006** passed the following checks on HPNEIL and the .241 processor in Office:
 

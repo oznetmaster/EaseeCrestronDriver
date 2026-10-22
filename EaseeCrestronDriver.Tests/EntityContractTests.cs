@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -62,6 +62,23 @@ public sealed class EntityContractTests
 			Assert.That (driverEvent.GetCustomAttribute<EntityEventAttribute> (), Is.Not.Null, driverEvent.Name);
 			Assert.That (driverEvent.GetCustomAttribute<EntityEventMetadataAttribute> ()?.Programmable, Is.True, driverEvent.Name);
 			}
+		}
+	[Test]
+	public void EntityIdentifiersAreUniqueAcrossPropertiesCommandsAndEvents ()
+		{
+		var members = typeof (EaseeDriver).GetMembers (BindingFlags.Public | BindingFlags.Instance);
+		var identifiers = members.Select (member => new
+			{
+			Member = member.Name,
+			Id = member.GetCustomAttribute<EntityPropertyAttribute> ()?.Id
+				?? member.GetCustomAttribute<EntityCommandAttribute> ()?.Id
+				?? member.GetCustomAttribute<EntityEventAttribute> ()?.Id
+			}).Where (member => member.Id is not null).ToArray ();
+		Assert.That (identifiers, Is.Not.Empty);
+		var collisions = identifiers.GroupBy (member => member.Id!, StringComparer.OrdinalIgnoreCase)
+			.Where (group => group.Count () > 1)
+			.Select (group => group.Key + ": " + string.Join (", ", group.Select (member => member.Member))).ToArray ();
+		Assert.That (collisions, Is.Empty, "Crestron Home programming combines properties, commands and events into one identifier dictionary.");
 		}
 	[Test]
 	public void UiTranslationKeysArePresent ()

@@ -7,7 +7,7 @@ if (!$ResultsDirectory) { $ResultsDirectory = Join-Path $root 'TestResults/offli
 $null = [IO.Directory]::CreateDirectory($ResultsDirectory)
 $projects = @(
     @{ Name='EaseeCrestronDriver.Core.Tests'; Minimum=54 },
-    @{ Name='EaseeCrestronDriver.Tests'; Minimum=7 }
+    @{ Name='EaseeCrestronDriver.Tests'; Minimum=8 }
 )
 foreach ($project in $projects) {
     $result = Join-Path $ResultsDirectory ($project.Name + '.trx')

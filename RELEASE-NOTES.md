@@ -1,18 +1,9 @@
-# EaseeCrestronDriver 1.0.0
+# EaseeCrestronDriver 1.0.1
 
-First stable public release of the Easee charger driver for Crestron Home, using the published EaseeChargerClient 1.0.0 library.
+Fixes Crestron Home programming-definition errors caused by the connection-state property and connection event sharing the `vehicleConnected` identifier. The property keeps its existing ID; the event now uses `vehicleConnectedEvent` with the same “Vehicle connected” display name. Any programming reference to the old connection-event identifier must be reselected. Other property, command and event IDs are unchanged.
 
-- Entity V2 driver targeting .NET Framework 4.7.2, with attributed properties, commands and events.
-- Account configuration, automatic sign-in recovery, rotating token persistence, and explicit site/charger pickers with serial numbers.
-- Status, charging power, session/lifetime energy, connection and schedule reporting through SignalR with one-minute REST fallback.
-- Room, Home or Both tile placement. Room provides direct Charge/Stop plus navigation; Home opens the detail page with Charge/Stop.
-- Immediate charging requests, stop, temporary current-limit overrides with an explicit duration, and permanent cable-lock control.
-- Clear labels distinguish charging authorization, the reported charging current limit and a temporary override.
+A contract regression checks identifier uniqueness across properties, commands and events, including case-only collisions. Validation reproduces the collision against the old event ID, then runs the corrected desktop and processor suites. Exact-source hosted and App-reported processor checks gate publication. Installed validation checks the Home programming definition and new log entries; it issues no charger commands.
 
-Validation includes 61 desktop tests, 69 processor tests, four read-only processor live tests, six installed-driver checks and four actual-app scenarios covering Room/Home/Both and site/charger pickers. These retained hardware/UI results identify their respective development and Release candidates in VALIDATION.md; they are not claims that every rebuilt package was physically retested. On 22 October 2026 the user visually approved the label update installed on the review processor and authorized publication without repeating its manual UI suites. Required exact-source CI checks still gate this release.
+The user also confirmed actual vehicle charging initiated from the driver's touch-panel Charge command on 22 October. This is human-observed end-to-end evidence, separate from the automated tests with a fully charged vehicle. The touch panel recovered after its own reboot; no causal connection between that incident and this definition error has been established.
 
-Testing used Crestron Home 4.11.1+pr. The connected vehicle was fully charged: start/stop acceptance and final noncharging state were verified, but energy delivery was not demonstrated. Live current-limit and cable-lock writes remain unexercised. The charger API does not provide vehicle battery percentage. Masked account configuration is not an encryption claim.
-
-Install EaseeCrestronDriver.pkg; the separate ProcessorTests package is validation tooling. SourceIdentity.json and SHA256SUMS.txt identify the published build. Documentation and original dependency licences/notices are included in the documentation ZIP.
-
-Copyright Neil Colvin. MIT License with Commons Clause.
+Install EaseeCrestronDriver.pkg. The release also includes the processor-test package, documentation ZIP, source identity and SHA256 checksums. Driver version: 1.0.001.0000. Copyright Neil Colvin; MIT License with Commons Clause.

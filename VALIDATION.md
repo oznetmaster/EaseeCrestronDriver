@@ -1,5 +1,11 @@
 # EaseeCrestronDriver validation
 
+## 1.0.1 connection-event correction — 22 October 2026
+
+The processor's persistent log showed Home programming-adapter exceptions for a duplicate `vehicleConnected` key. Source inspection confirmed that the property and event shared that ID. The property remains `vehicleConnected`; only the event ID changes to `vehicleConnectedEvent`. A regression checks the combined property/command/event namespace. Desktop validation explicitly restores the old event ID in an isolated checkout to demonstrate the regression failure before testing the corrected source. Exact-source CI and processor results are retained separately for this patch; the published asset checksums identify the resulting Release build.
+
+The user confirmed that a real car was charging after starting the session from the driver on the touch panel. This supplies human-observed end-to-end charging evidence. It does not convert earlier fully charged-car tests into energy-delivery tests. The panel outage recovered following a panel reboot while processor and Home program uptime remained continuous; its cause has not been attributed to the definition collision.
+
 ## 1.0.0 release acceptance — 22 October 2026
 
 The user approved the driver visually and authorized the first stable public release. The final label review used version **0.1.000.0007**, source `be56e05c652a31d2f6ca8ba8b8fa7f00d2eaca44`, package SHA256 `68f531e2d65f6829b6858665aa8ad0582f7a012c1e8e794e700a0fef8c0b3066`. Its installed payload, version, account selection and Both placement were verified before human review. The user explicitly waived repeating tests for the label change, then confirmed “looks good” and requested publication. The review reservation was released while leaving the approved driver installed.

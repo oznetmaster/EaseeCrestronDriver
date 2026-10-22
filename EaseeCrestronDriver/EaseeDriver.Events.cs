@@ -1,4 +1,4 @@
-﻿using Crestron.DeviceDrivers.SDK.EntityModel.Attributes;
+using Crestron.DeviceDrivers.SDK.EntityModel.Attributes;
 
 namespace Easee.CrestronDriver;
 
@@ -13,7 +13,7 @@ public sealed partial class EaseeDriver
 	[EntityEventMetadata (Programmable = true)]
 	public event EventHandler? ChargingStopped;
 	/// <summary>Raised when a known disconnected state changes to connected.</summary>
-	[EntityEvent (Id = "vehicleConnected", FriendlyName = "Vehicle connected")]
+	[EntityEvent (Id = "vehicleConnectedEvent", FriendlyName = "Vehicle connected")]
 	[EntityEventMetadata (Programmable = true)]
 	public event EventHandler? VehicleConnectedEvent;
 	/// <summary>Raised when a known connected state changes to disconnected.</summary>
