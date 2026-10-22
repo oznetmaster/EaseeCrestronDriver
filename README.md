@@ -14,7 +14,11 @@ Charge authorizes the connected vehicle and requests an immediate schedule overr
 
 ## Installation
 
-Download **EaseeCrestronDriver.pkg** from the [GitHub release assets](https://github.com/oznetmaster/EaseeCrestronDriver/releases/latest). The separate `EaseeCrestronDriver.ProcessorTests.pkg` is a test host, not the charger driver. GitHub's automatic **Source code (zip)** and **Source code (tar.gz)** downloads are repository snapshots, not installable packages.
+Use the [Crestron Home Driver Feed Installer](https://github.com/oznetmaster/Crestron-Home-Driver-Feed-Installer) repository and application to download and install a community-distributed release.
+
+If you prefer to install manually, use the attached `.pkg` asset from the relevant [GitHub Release](https://github.com/oznetmaster/EaseeCrestronDriver/releases/latest). The automatic GitHub `Source code (zip)` and `Source code (tar.gz)` assets are repository snapshots, not installable Crestron driver packages.
+
+For this driver, download **EaseeCrestronDriver.pkg**. The separate `EaseeCrestronDriver.ProcessorTests.pkg` is a test host, not the charger driver.
 
 1. Connect to the processor using SFTP and your processor credentials. Upload `EaseeCrestronDriver.pkg` to `/user/ThirdPartyDrivers/Import` and allow the import to finish.
 2. Open **Crestron Home Setup**, connect to the processor and open **Pair Devices**. Find **Easee Charger** under manufacturer **Easee**, category **Energy Automation** (developer **Neil Colvin**), and add it to the intended room.
