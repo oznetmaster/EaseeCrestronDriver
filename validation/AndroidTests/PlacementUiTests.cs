@@ -56,7 +56,7 @@ public sealed class PlacementUiTests
 		_settings = JsonSerializer.Deserialize<Settings> (File.ReadAllText (Environment.GetEnvironmentVariable ("EASEE_DRIVER_UI_SETTINGS") ?? throw new InvalidDataException ("Private UI settings missing.")), Json)!;
 		if (_settings.Host != _context.ProcessorAddress || string.IsNullOrWhiteSpace (_settings.ChargerId) || _settings.ExpiresAt <= DateTimeOffset.UtcNow.AddMinutes (8))
 			throw new InvalidDataException ("Private selection/observer inputs are unavailable or too close to expiry.");
-		using var active = new CancellationTokenSource (TimeSpan.FromMinutes (24));
+		using var active = new CancellationTokenSource (TimeSpan.FromMinutes (32));
 		var token = active.Token;
 		await PrepareSelectedCharger (token);
 		var before = await Read (token);
@@ -319,6 +319,7 @@ public sealed class PlacementUiTests
 			{
 			var seen = new HashSet<string> (StringComparer.Ordinal);
 			bool end = false;
+			int stationary = 0;
 			for (int i = 0; i < 18; i++)
 				{
 				AndroidHierarchy? current = null;
@@ -326,6 +327,9 @@ public sealed class PlacementUiTests
 				var h = current!;
 				var viewport = Viewport (h, page);
 				var card = TileNode (h, page);
+				// A clipped tile establishes presence, but cannot be pressed until fully visible.
+				if (card != null)
+					found = true;
 				if (card != null && Inside (h.RequireUnique (TileSelector (h, page)), viewport))
 					{
 					found = true;
@@ -336,7 +340,11 @@ public sealed class PlacementUiTests
 						return;
 					}
 				string signature = string.Join ("|", XDocument.Parse (h.MaskedXml).Descendants ("node").Where (n => (string?)n.Attribute ("resource-id") == Prefix + "titleSubtitle_title" || ((string?)n.Attribute ("content-desc"))?.StartsWith ("room_service_", StringComparison.Ordinal) == true).Select (n => (string?)n.Attribute ("text") + ":" + (string?)n.Attribute ("content-desc") + ":" + (string?)n.Attribute ("bounds")));
-				if (viewport == null || !seen.Add (signature))
+				bool repeated = !seen.Add (signature);
+				stationary = repeated ? stationary + 1 : 0;
+				// A completed navigation-only swipe may be ignored. Require three stable
+				// results, and keep searching while the requested tile is partly visible.
+				if (viewport == null || stationary >= 3 && !(expected && card != null))
 					{
 					end = true;
 					break;
