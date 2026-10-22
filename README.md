@@ -6,6 +6,30 @@ The tile reports status and charging power. When a vehicle is connected and idle
 
 Charge authorizes the connected vehicle and requests an immediate schedule override. Stop deauthorizes the session. HTTP acceptance is reported separately from observed charging. The driver does not estimate battery percentage. SignalR supplies live observations, with a status check every minute and schedule refresh every five minutes or after a schedule notification.
 
+## Prerequisites
+
+- A Crestron Home processor supporting Entity V2 drivers. Validation used Crestron Home 4.11.1+pr.
+- An Easee account with access to the intended site and charger, and Internet access from the processor to Easee's cloud services.
+- Processor credentials for package import and access to Crestron Home Setup.
+
+## Installation
+
+Download **EaseeCrestronDriver.pkg** from the [GitHub release assets](https://github.com/oznetmaster/EaseeCrestronDriver/releases/latest). The separate `EaseeCrestronDriver.ProcessorTests.pkg` is a test host, not the charger driver. GitHub's automatic **Source code (zip)** and **Source code (tar.gz)** downloads are repository snapshots, not installable packages.
+
+1. Connect to the processor using SFTP and your processor credentials. Upload `EaseeCrestronDriver.pkg` to `/user/ThirdPartyDrivers/Import` and allow the import to finish.
+2. Open **Crestron Home Setup**, connect to the processor and open **Pair Devices**. Find **Easee Charger** under manufacturer **Easee**, category **Energy Automation** (developer **Neil Colvin**), and add it to the intended room.
+3. Complete the **Easee account** configuration with the account email address or phone number and password. Choose **Room page**, **Home page** or **Both** for tile placement, then save.
+4. Open the driver's detail page on the touch panel or Home app, then open **Settings**. Select the **Site**, then the **Charger**, checking its name and serial number. The driver does not choose a charger automatically.
+5. Confirm **Connected to Easee**, the intended charger selection, and current status/power. The Room tile provides direct Charge/Stop and separate detail navigation; the Home tile opens the detail page containing those controls.
+
+The password is retained for automatic account recovery. Enter it only in the driver's masked configuration field; do not put account credentials in GitHub issues or shared logs. The processor runs the integration directly; the Windows EaseeChargerClient app is not required.
+
+### Updating an existing installation
+
+Import the new `.pkg`, then apply the available driver update to the existing **Easee Charger** instance in Setup. Importing a package alone does not update the installed instance. Review the account configuration, selected site/charger, room and tile placement after updating, and confirm that status and power are live.
+
+Version **1.0.1** uses `vehicleConnectedEvent` for the programmable **Vehicle connected** event; the `vehicleConnected` state property is unchanged. Reselect any existing programming reference to the old event ID, then verify the relevant automation. The displayed event name remains **Vehicle connected**.
+
 ## Setup and controls
 
 Enter the Easee username and masked password in Configure. The password is retained for automatic fresh sign-in recovery; rotating token sessions are checkpointed in the processor's native datastore. Masking does not claim encryption of the processor's configuration database. Select an account site and then its charger in the Settings page. Lists identify chargers by name and serial number. Changing site clears the charger selection. No charger is selected automatically. The explicit selection is stored separately for this driver instance and account, so reconfiguring the Account step or reloading the driver can restore it. Dynamic pickers publish inline option snapshots for Crestron Home compatibility.

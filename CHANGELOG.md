@@ -4,7 +4,8 @@
 
 - Fix the duplicate connection property/event identifier that caused Home's programming adapter to throw `An item with the same key has already been added. Key: vehicleConnected`.
 - Preserve the `vehicleConnected` property and give the event the unique `vehicleConnectedEvent` ID; its display name remains “Vehicle connected”. Existing programming references to the old event ID must be reselected.
-- Add a regression check for identifier collisions across properties, commands and events, including case-only collisions.
+- Add a regression check for identifier collisions across properties, commands and events, including case-only collisions; update the declared processor suite to 70 tests.
+- Add prerequisites, package installation, account/site/charger setup and upgrade instructions to the README.
 - Record the user's successful real charging session initiated from the touch-panel driver. This is human-observed evidence; publication and definition validation issue no charger commands.
 
 ## 1.0.0 — 2026-10-22

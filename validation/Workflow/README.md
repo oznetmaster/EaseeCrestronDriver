@@ -1,4 +1,4 @@
-﻿# Repeatable driver validation
+# Repeatable driver validation
 
 This standalone .NET 10 console is desktop tooling outside the net472 driver solution. It calls the **published CrestronHomeNUnit 3.0.0 public workflow API**, matching `ProcessorTestSdk.lock.json`. It neither forks that SDK nor implements a second processor test runner.
 
@@ -6,7 +6,7 @@ This standalone .NET 10 console is desktop tooling outside the net472 driver sol
 
 ## Native workflow
 
-Create the private workflow plan using the public `WorkflowPlan` schema. Its required stages are both desktop projects (at least 54 core and seven contract tests), the `easee-driver` processor suite (at least 69), and temporary test-instance/package cleanup. Use the pinned SDK source for `ProcessorTestSdkRoot`. Set the explicit available processor address and verified HTTPS/SSH fingerprints from the protected pool templates; no processor is selected by this tool. The public lease acquisition is authoritative if availability changes after selection.
+Create the private workflow plan using the public `WorkflowPlan` schema. Its required stages are both desktop projects (at least 54 core and eight contract tests), the `easee-driver` processor suite (at least 70), and temporary test-instance/package cleanup. Use the pinned SDK source for `ProcessorTestSdkRoot`. Set the explicit available processor address and verified HTTPS/SSH fingerprints from the protected pool templates; no processor is selected by this tool. The public lease acquisition is authoritative if availability changes after selection.
 
 Optional live validation is the `easee-driver-live` read-only suite (at least four tests). Its inputs are fresh `LiveTestSettings.json` containing only `AccessToken`, `ExpiresAt`, `SiteId`, and `ChargerId`. The existing `IndependentSessionTests` preparation uses an encrypted `Account.dpapi` outside the checkout. The processor receives neither the password nor the refresh chain. Preparing an independent session requires its existing explicit `EASEE_DRIVER_PREPARE_SESSION` and private-directory settings.
 
