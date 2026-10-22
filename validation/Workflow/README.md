@@ -1,4 +1,4 @@
-# Repeatable driver validation
+﻿# Repeatable driver validation
 
 This standalone .NET 10 console is desktop tooling outside the net472 driver solution. It calls the **published CrestronHomeNUnit 3.0.0 public workflow API**, matching `ProcessorTestSdk.lock.json`. It neither forks that SDK nor implements a second processor test runner.
 
@@ -39,7 +39,7 @@ $env:EASEE_DRIVER_UI_SETTINGS = 'C:\Private\ui-settings.json'
 ./validation/Workflow/Invoke-Validation.ps1 -Mode Installed -PlanPath C:\Private\picker-plan.json -SettingsPath C:\Private\processor-settings.json -ResultsDirectory C:\Private\Runs\unique-picker-run
 ```
 
-Placement scenarios issue start/stop requests and require **`-AllowStartStop`**. The launcher sets the fixture's separate opt-in only for that child execution. Run each of Room, Home and Both separately. Use the proven bounded per-scenario timeout (2100 seconds, with sufficient enclosing transport allowance); a short transport timeout can interrupt cleanup. A full vehicle can remain noncharging after request acceptance. No current-limit or cable-lock writes are performed by these scenarios.
+Placement scenarios issue start/stop requests and require **`-AllowStartStop`**. The launcher sets the fixture's separate opt-in only for that child execution. Run each of Room, Home and Both separately. Use a bounded per-scenario timeout of 2700 seconds and at least 3600 seconds for the enclosing transport. Placement fixtures allow 32 minutes of active work and a separate five-minute cleanup budget; leave time for SDK preparation and verification. A short transport timeout can interrupt cleanup. A full vehicle can remain noncharging after request acceptance. No current-limit or cable-lock writes are performed by these scenarios.
 
 ## Validate a plan without operating hardware
 
