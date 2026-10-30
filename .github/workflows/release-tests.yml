@@ -15,8 +15,10 @@ permissions:
   actions: read
   checks: read
 concurrency:
-  group: easee-processor-test-release
+  group: public-release
   cancel-in-progress: false
+  queue: max
+
 jobs:
   release:
     runs-on: windows-latest
@@ -39,6 +41,13 @@ jobs:
         run: |
           if($env:GITHUB_REF -cne 'refs/heads/master' -or $env:TEST_VERSION -notmatch '^\d+\.\d+\.\d+$'){throw 'Run from master with a three-part test-host version.'}
           ./.github/scripts/Wait-RequiredReleaseChecks.ps1
+      - name: Verify shared release policy
+        uses: oznetmaster/CrestronHomeNUnit/.github/actions/release-validation@2ae8197c6685099c2133e7bb962d1f3568aae9c3
+        with:
+          required-checks: "${{ vars.RELEASE_REQUIRED_CHECKS }}"
+          hosted-workflows: "[\"tests.yml\",\"workflow-discovery.yml\",\"nunit5-policy.yml\"]"
+          skip-hardware-checks: "false"
+          hardware-skip-reason: ""
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |

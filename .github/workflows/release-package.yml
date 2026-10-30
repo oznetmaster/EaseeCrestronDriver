@@ -16,8 +16,10 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: easee-driver-release-${{ github.ref }}
+  group: public-release
   cancel-in-progress: false
+  queue: max
+
 jobs:
   prepare:
     if: ${{ !inputs.publish }}
@@ -46,6 +48,13 @@ jobs:
           REQUIRED_RELEASE_CHECKS: ${{ vars.RELEASE_REQUIRED_CHECKS }}
           REQUIRED_HOSTED_WORKFLOWS: '["tests.yml","workflow-discovery.yml","nunit5-policy.yml"]'
         run: ./.github/scripts/Wait-RequiredReleaseChecks.ps1
+      - name: Verify shared release policy
+        uses: oznetmaster/CrestronHomeNUnit/.github/actions/release-validation@2ae8197c6685099c2133e7bb962d1f3568aae9c3
+        with:
+          required-checks: "${{ vars.RELEASE_REQUIRED_CHECKS }}"
+          hosted-workflows: "[\"tests.yml\",\"workflow-discovery.yml\",\"nunit5-policy.yml\"]"
+          skip-hardware-checks: "false"
+          hardware-skip-reason: ""
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
@@ -126,6 +135,13 @@ jobs:
           REQUIRED_RELEASE_CHECKS: ${{ vars.RELEASE_REQUIRED_CHECKS }}
           REQUIRED_HOSTED_WORKFLOWS: '["tests.yml","workflow-discovery.yml","nunit5-policy.yml"]'
         run: ./.github/scripts/Wait-RequiredReleaseChecks.ps1
+      - name: Verify shared release policy
+        uses: oznetmaster/CrestronHomeNUnit/.github/actions/release-validation@2ae8197c6685099c2133e7bb962d1f3568aae9c3
+        with:
+          required-checks: "${{ vars.RELEASE_REQUIRED_CHECKS }}"
+          hosted-workflows: "[\"tests.yml\",\"workflow-discovery.yml\",\"nunit5-policy.yml\"]"
+          skip-hardware-checks: "false"
+          hardware-skip-reason: ""
       - uses: actions/upload-artifact@v4
         with:
           name: release-assets
