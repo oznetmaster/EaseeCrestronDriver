@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.2 — 2026-10-22
+## [1.0.2](https://github.com/oznetmaster/EaseeCrestronDriver/releases/tag/v1.0.2) — 2026-10-22
 
 - Publish the `CrestronHomeDriver.Easee.Charger` NuGet distribution wrapper with the v1 community manifest, required metadata and exact final driver payload, using GitHub OIDC trusted publishing.
 - Promote immutable staged release assets after candidate validation; verify published GitHub/NuGet payload identity.
@@ -15,7 +15,7 @@
 - Add prerequisites, package installation, account/site/charger setup and upgrade instructions to the README.
 - Record the user's successful real charging session initiated from the touch-panel driver. This is human-observed evidence; publication and definition validation issue no charger commands.
 
-## 1.0.0 — 2026-10-22
+## [1.0.0](https://github.com/oznetmaster/EaseeCrestronDriver/releases/tag/v1.0.0) — 2026-10-22
 
 First stable public release. Includes the charger reporting, configuration, tile placements, immediate Charge/Stop, temporary charging-current override and cable-lock controls described below. Clarifies the labels to “Awaiting charging authorization”, “Charging current limit”, “Temporary limit (A)” and “Override duration (min)”.
 
