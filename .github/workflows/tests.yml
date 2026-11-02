@@ -16,17 +16,21 @@ jobs:
         with:
           dotnet-version: 10.0.x
       - name: Test release guards
-        shell: pwsh
-        run: |
-          ./.github/scripts/Test-RequiredReleaseChecks.ps1
-          ./scripts/Test-ReleaseVersion.ps1
+        uses: oznetmaster/BuildAutomation@ae6f311e530a18dc705971dcc655fc97de03e368
+        with:
+          task: tests-test-test-release-guards
       - name: Run offline NUnit 5 suites
-        shell: pwsh
-        run: ./scripts/Test-Offline.ps1
+        uses: oznetmaster/BuildAutomation@ae6f311e530a18dc705971dcc655fc97de03e368
+        with:
+          task: tests-test-run-offline-nunit-5-suites
       - name: Build desktop validation tooling
-        run: dotnet build validation/Workflow/Workflow.csproj -c Release --disable-build-servers
+        uses: oznetmaster/BuildAutomation@ae6f311e530a18dc705971dcc655fc97de03e368
+        with:
+          task: tests-test-build-desktop-validation-tooling
       - name: Build Android fixture harness without running it
-        run: dotnet build validation/AndroidTests/EaseeCrestronDriver.AndroidTests.csproj -c Release --disable-build-servers
+        uses: oznetmaster/BuildAutomation@ae6f311e530a18dc705971dcc655fc97de03e368
+        with:
+          task: tests-test-build-android-fixture-harness-without-running-it
       - uses: actions/upload-artifact@v4
         if: always()
         with:

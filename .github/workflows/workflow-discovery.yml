@@ -16,9 +16,6 @@ jobs:
         with:
           dotnet-version: 10.0.x
       - name: Discover exactly one offline processor workflow
-        shell: pwsh
-        run: |
-          $output = @(dotnet test validation/WorkflowTests/EaseeCrestronDriver.WorkflowTests.csproj -c Release --list-tests 2>&1)
-          $output | Write-Output
-          if ($LASTEXITCODE -ne 0) { throw 'Workflow discovery failed.' }
-          if (@($output | Where-Object { $_.ToString().Trim() -ieq 'EaseeCrestronDriver processor workflow' }).Count -ne 1) { throw 'Expected one named workflow.' }
+        uses: oznetmaster/BuildAutomation@ae6f311e530a18dc705971dcc655fc97de03e368
+        with:
+          task: workflow-discovery-discover-discover-exactly-one-offline-processor-workflow

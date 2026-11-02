@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "tasks": {
+    "tests-test-test-release-guards": {
+      "commands": [
+        {
+          "executable": "pwsh",
+          "script": "build/steps/tests-test-test-release-guards.ps1",
+          "shell": "pwsh"
+        }
+      ]
+    },
+    "tests-test-run-offline-nunit-5-suites": {
+      "commands": [
+        {
+          "executable": "pwsh",
+          "script": "build/steps/tests-test-run-offline-nunit-5-suites.ps1",
+          "shell": "pwsh"
+        }
+      ],
+      "results": [
+        "TestResults/**/*.trx"
+      ]
+    },
+    "tests-test-build-desktop-validation-tooling": {
+      "commands": [
+        {
+          "executable": "dotnet",
+          "arguments": [
+            "build",
+            "validation/Workflow/Workflow.csproj",
+            "-c",
+            "Release",
+            "--disable-build-servers"
+          ]
+        }
+      ]
+    },
+    "tests-test-build-android-fixture-harness-without-running-it": {
+      "commands": [
+        {
+          "executable": "dotnet",
+          "arguments": [
+            "build",
+            "validation/AndroidTests/EaseeCrestronDriver.AndroidTests.csproj",
+            "-c",
+            "Release",
+            "--disable-build-servers"
+          ]
+        }
+      ]
+    },
+    "workflow-discovery-discover-discover-exactly-one-offline-processor-workflow": {
+      "commands": [
+        {
+          "executable": "pwsh",
+          "script": "build/steps/workflow-discovery-discover-discover-exactly-one-offline-processor-workflow.ps1",
+          "shell": "pwsh"
+        }
+      ]
+    }
+  }
+}
