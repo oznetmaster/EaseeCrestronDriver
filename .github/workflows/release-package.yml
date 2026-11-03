@@ -105,7 +105,12 @@ jobs:
         env:
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: ./scripts/Stage-Release.ps1 -Version $env:RELEASE_VERSION -SdkRoot "$env:GITHUB_WORKSPACE/.processor-sdk"
-      - uses: actions/upload-artifact@v4
+      - name: Verify public driver artifact contents
+        shell: pwsh
+        run: |
+          ./tools/Assert-PublicDriverArtifacts.ps1 -Path @("artifacts/release")
+      - name: Stage verified public assets
+        uses: actions/upload-artifact@v4
         with:
           name: release-assets
           path: artifacts/release/*
@@ -172,6 +177,10 @@ jobs:
           skip-desktop-checks: "${{ inputs.skip_desktop_checks }}"
           desktop-skip-reason: "${{ inputs.desktop_skip_reason }}"
           validation-commit: "${{ inputs.validation_commit }}"
+      - name: Verify public driver artifact contents
+        shell: pwsh
+        run: |
+          ./tools/Assert-PublicDriverArtifacts.ps1 -Path @("artifacts/release")
       - uses: actions/upload-artifact@v4
         with:
           name: release-assets
@@ -194,6 +203,10 @@ jobs:
         with:
           name: release-assets
           path: artifacts/release
+      - name: Verify public driver artifact contents
+        shell: pwsh
+        run: |
+          ./tools/Assert-PublicDriverArtifacts.ps1 -Path @("artifacts/release")
       - name: Authenticate to NuGet using GitHub OIDC
         id: login
         uses: NuGet/login@v1
@@ -218,6 +231,10 @@ jobs:
         with:
           name: release-assets
           path: artifacts/release
+      - name: Verify public driver artifact contents
+        shell: pwsh
+        run: |
+          ./tools/Assert-PublicDriverArtifacts.ps1 -Path @("artifacts/release")
       - name: Publish the already verified GitHub assets
         env:
           GH_TOKEN: ${{ github.token }}

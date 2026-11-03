@@ -96,6 +96,10 @@ jobs:
           name: processor-test-release
           path: artifacts/processor-release/*
           if-no-files-found: error
+      - name: Verify public driver artifact contents
+        shell: pwsh
+        run: |
+          ./tools/Assert-PublicDriverArtifacts.ps1 -Path @("artifacts/processor-release")
       - name: Publish processor-only GitHub assets
         if: inputs.publish
         shell: pwsh

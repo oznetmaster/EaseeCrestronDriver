@@ -22,7 +22,12 @@
     <WriteLinesToFile File="$(TargetDir)merge_inputs.txt" Lines="@(EaseeMergeInputs->'%(FullPath)')" Overwrite="true"/>
     <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\ILRepackMerge.ps1&quot; -TargetPath &quot;$(TargetPath)&quot; -OutputPath &quot;$(MergedDriverPath)&quot; -InputListFile &quot;$(TargetDir)merge_inputs.txt&quot; -LibDir &quot;$(TargetDir.TrimEnd('\'))&quot; -ToolDirectory &quot;$(IlRepackToolDirectory)&quot;"/>
     <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\PatchMergedAssembly.ps1&quot; -AssemblyPath &quot;$(MergedDriverPath)&quot; -OutputPath &quot;$(PatchedDriverPath)&quot; -CecilPath &quot;$(IlRepackToolDirectory)\Mono.Cecil.dll&quot; -InputListFile &quot;$(TargetDir)merge_inputs.txt&quot; -ManifestPath &quot;$(MSBuildProjectDirectory)\EaseeCrestronDriver.json&quot;"/>
-    <ItemGroup><EaseeUiFiles Include="$(MSBuildProjectDirectory)\IncludeInPkg\**\*"/></ItemGroup>
+    <!-- Submission help is added only to a separate frozen Crestron submission copy. -->
+    <RemoveDir Directories="$(TargetDir)patched\IncludeInPkg" />
+    <ItemGroup>
+      <EaseeUiFiles Include="$(MSBuildProjectDirectory)\IncludeInPkg\**\*"/>
+      <EaseeUiFiles Remove="@(EaseeUiFiles)" Condition="'%(EaseeUiFiles.Extension)' == '.pdf'" />
+    </ItemGroup>
     <Copy SourceFiles="@(EaseeUiFiles)" DestinationFiles="@(EaseeUiFiles->'$(TargetDir)patched\IncludeInPkg\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <Copy SourceFiles="$(MSBuildProjectDirectory)\..\LICENSE" DestinationFiles="$(TargetDir)patched\IncludeInPkg\Licenses\EaseeDriver-LICENSE.txt"/>
     <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\Stage-Licences.ps1&quot; -AssetsFile &quot;$(ProjectAssetsFile)&quot; -OutputDirectory &quot;$(TargetDir)patched\IncludeInPkg\Licenses\Dependencies&quot;"/>
