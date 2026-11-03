@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><TargetFramework>net472</TargetFramework><GenerateDocumentationFile>true</GenerateDocumentationFile><GenerateDriverPackage>false</GenerateDriverPackage><CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies><AssemblyName>EaseeCrestronDriver</AssemblyName></PropertyGroup>
+  <Import Project="DriverVersion.props" />
   <ItemGroup>
     <ProjectReference Include="../EaseeCrestronDriver.Core/EaseeCrestronDriver.Core.csproj" />
     <PackageReference Include="Crestron.DeviceDrivers.DevKit" Version="29.0.10" />

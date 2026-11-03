@@ -71,6 +71,19 @@
           ]
         }
       ]
+    },
+    "driver-versioning-regressions": {
+      "commands": [
+        {
+          "executable": "pwsh",
+          "arguments": [
+            "-NoLogo",
+            "-NoProfile",
+            "-File",
+            "scripts/Test-DriverVersioning.ps1"
+          ]
+        }
+      ]
     }
   }
 }

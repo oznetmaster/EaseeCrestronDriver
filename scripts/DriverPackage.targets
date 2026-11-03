@@ -4,8 +4,8 @@
     <BuildDriverPackage Condition="'$(BuildDriverPackage)' == ''">false</BuildDriverPackage>
     <IlRepackToolDirectory Condition="'$(IlRepackToolDirectory)' == ''">$(UserProfile)\.dotnet\tools\.store\dotnet-ilrepack\2.0.45\dotnet-ilrepack\2.0.45\tools\net8.0\any</IlRepackToolDirectory>
   </PropertyGroup>
-  <Target Name="BumpEaseeDebugVersion" BeforeTargets="BeforeBuild" Condition="'$(BuildDriverPackage)' == 'true' And '$(DesignTimeBuild)' != 'true'">
-    <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\BumpDriverVersion.ps1&quot; -ManifestPath &quot;$(MSBuildProjectDirectory)\EaseeCrestronDriver.json&quot; -Configuration &quot;$(Configuration)&quot;"/>
+  <Target Name="BumpDriverVersion" BeforeTargets="BeforeBuild" Condition="'$(BuildDriverPackage)' == 'true' And '$(DesignTimeBuild)' != 'true'">
+    <Exec Command="pwsh -NoProfile -NonInteractive -File &quot;$(MSBuildProjectDirectory)\..\scripts\BumpDriverVersion.ps1&quot; -ManifestPath &quot;$(MSBuildProjectDirectory)\EaseeCrestronDriver.json&quot; -Configuration &quot;$(Configuration)&quot; -ReleaseVersion &quot;$(DriverReleaseVersion)&quot;"/>
   </Target>
   <Target Name="BuildEaseePackage" AfterTargets="Build" Condition="'$(BuildDriverPackage)' == 'true' And '$(DesignTimeBuild)' != 'true'">
     <PropertyGroup>
