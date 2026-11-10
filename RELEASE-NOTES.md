@@ -1,11 +1,17 @@
-# EaseeCrestronDriver 1.0.2
+# EaseeCrestronDriver 1.0.3
 
-Fixes Crestron Home programming-definition errors caused by the connection-state property and connection event sharing the `vehicleConnected` ID. The property keeps its existing ID; the event uses `vehicleConnectedEvent` with the same “Vehicle connected” display name. Reselect any programming reference to the old event ID.
+This patch corrects the dependency and lifecycle issues described below.
 
-This release adds the model's NuGet distribution as **CrestronHomeDriver.Easee.Charger**, with the required `CrestronHomeDriver` package type, root `crestron-driver-package.json`, exactly one final Release `.pkg`, required metadata/readme/licence and no library DLL payload or dependencies. The community **Crestron Home Driver NuGet Publishing Standard v1** is not an official Crestron specification.
+- Use EaseeChargerClient 1.0.1.
+- Publish charger observations in revision order so a delayed REST refresh cannot overwrite newer confirmed push feedback.
+- Enforce warnings as errors in Debug builds and retain warnings in Release builds.
 
-The README now includes the Crestron Home Driver Feed Installer, alternative manual import instructions, account/site/charger setup and upgrade guidance. Release automation uses NuGet trusted publishing with GitHub OIDC and promotes the exact staged assets after candidate validation. The model comparison also covers the NUnit policy, independent processor-test releases, post-publication payload validation and complete test-host dependency notices.
+## Installation
 
-The collision regression fails against the old event ID and passes after correction. The corrected suites include 62 desktop and 70 processor tests. The installed 1.0.1 development fix loaded without new definition errors while charging feedback remained active; the audited 1.0.2 candidate has its own retained package identity and validation. The user's panel-initiated actual charging observation is human end-to-end evidence, distinct from earlier fully charged-car request tests. No charger commands are issued by publication. Live current-limit and cable-lock writes remain unexercised.
+Use the driver package from [GitHub](https://github.com/oznetmaster/EaseeCrestronDriver/releases/tag/v1.0.3) or the matching NuGet distribution. Import the package, then update the existing driver in Home Setup or Configure Pro. Importing alone does not update the running instance. Existing pairing and configuration formats are retained; removal and re-add is not a routine update step.
 
-Install **EaseeCrestronDriver.pkg**, directly or through the NuGet/Feed Installer distribution. The processor test package is separate tooling. GitHub includes the same driver bytes, documentation, source identity and SHA256 checksums. Driver version **1.0.002.0000**. Copyright Neil Colvin; MIT License with Commons Clause.
+## Validation
+
+Passed 63 workstation Debug and 63 Release test executions, plus 72 native net472/Mono processor tests. Processor validation used fake transports and synthetic credentials; no new physical-device acceptance or endurance run is claimed. Existing processor configuration and all pairing files were preserved. See [development history](DEVELOPMENT-HISTORY.md) for provenance and limits.
+
+This GitHub/NuGet release does not replace any submitted Crestron package. Submission-specific PDFs and correspondence are excluded from public artifacts.

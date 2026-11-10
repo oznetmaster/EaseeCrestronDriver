@@ -175,11 +175,34 @@ public sealed class ProcessorRuntimeTests
 		}
 	private static string DataDirectory ()
 		{
-		var root = TestContext.Parameters.Get ("TestDataDirectory", TestContext.CurrentContext.TestDirectory);
+		var root = TestContext.CurrentContext.TestDirectory;
 		var candidates = new[] { Path.Combine (root, "DriverTestData"), Path.Combine (TestContext.CurrentContext.TestDirectory, "DriverTestData"), Path.Combine (TestContext.CurrentContext.TestDirectory, "IncludeInPkg", "DriverTestData") };
 		return candidates.FirstOrDefault (Directory.Exists) ?? throw new DirectoryNotFoundException ("The processor package must include the original driver UI test data.");
 		}
 	private static EaseeDriver Create (DriverLogger logger)
+		{
+		return CreateCore (logger);
+		}
+
+	[Test]
+	public void EarlierRestReadingCannotReverseNewerPushStateOrEvents ()
+		{
+		using var logger = new DriverLogger ("easee-order-tests");
+		using var driver = Create (logger);
+		var publish = typeof (EaseeDriver).GetMethod ("Publish", BindingFlags.NonPublic | BindingFlags.Instance)!;
+		int starts = 0, stops = 0;
+		driver.ChargingStarted += (_, _) => starts++;
+		driver.ChargingStopped += (_, _) => stops++;
+		void Apply (long revision, ChargerMode mode) => publish.Invoke (driver, [new ChargerReading { Revision = revision, Mode = mode, Online = true }, CancellationToken.None]);
+		Apply (1, ChargerMode.Completed);
+		Apply (3, ChargerMode.Charging);
+		Apply (2, ChargerMode.Completed);
+		Assert.That (driver.Charging, Is.True);
+		Assert.That (starts, Is.EqualTo (1));
+		Assert.That (stops, Is.Zero);
+		}
+
+	private static EaseeDriver CreateCore (DriverLogger logger)
 		{
 		using var stream = typeof (ProcessorRuntimeTests).Assembly.GetManifestResourceStream ("EaseeDriver.Tests.Manifest")!;
 		using var reader = new StreamReader (stream);

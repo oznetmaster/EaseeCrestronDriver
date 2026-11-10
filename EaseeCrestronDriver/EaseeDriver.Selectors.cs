@@ -1,4 +1,7 @@
-﻿using Crestron.DeviceDrivers.EntityModel.Data;
+// Copyright (c) 2026 Neil Colvin.
+// Licensed under the MIT License with Commons Clause. See LICENSE in the repository root.
+
+using Crestron.DeviceDrivers.EntityModel.Data;
 using Crestron.DeviceDrivers.SDK.EntityModel;
 
 namespace Easee.CrestronDriver;
@@ -40,7 +43,7 @@ public sealed partial class EaseeDriver
 						"selectedCharger" => ((EaseeDriver)instance).SelectedCharger,
 						"requestedAmps" => ((EaseeDriver)instance).RequestedAmps,
 						_ => throw new ArgumentOutOfRangeException (nameof (id))
-					})));
+						})));
 			_inlineOptions[id] = values.ToArray ();
 			}
 		RaiseDefinitionChangedEvent ();

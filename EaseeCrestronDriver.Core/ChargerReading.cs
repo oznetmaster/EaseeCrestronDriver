@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+// Copyright (c) 2026 Neil Colvin.
+// Licensed under the MIT License with Commons Clause. See LICENSE in the repository root.
+
+using System.Globalization;
 
 using EaseeChargerClient.Models;
 
@@ -7,6 +10,10 @@ namespace Easee.CrestronDriver;
 // All fields represent actual observations. Missing values stay unknown.
 internal sealed record ChargerReading
 	{
+	internal long Revision
+		{
+		get; init;
+		}
 	internal ChargerMode? Mode
 		{
 		get; init;

@@ -8,6 +8,19 @@ internal sealed class ObservationStateTests
 	{
 	private static readonly DateTimeOffset Now = DateTimeOffset.Parse ("2026-10-21T10:00:00Z");
 	[Test]
+	public void SnapshotRevisionsOnlyAdvanceForAcceptedObservations ()
+		{
+		var state = new ObservationState ("ABC123");
+		var update = new EaseeProductUpdate { DeviceId = "ABC123", ObservationId = 120, DataType = 3, Value = "7.2", Timestamp = Now };
+		state.Apply (update);
+		var earlier = state.Read (Now);
+		state.Apply (update);
+		Assert.That (state.Read (Now).Revision, Is.EqualTo (earlier.Revision));
+		state.Apply (new EaseeProductUpdate { DeviceId = "ABC123", ObservationId = 109, DataType = 4, Value = "3", Timestamp = Now.AddSeconds (1) });
+		Assert.That (state.Read (Now).Revision, Is.GreaterThan (earlier.Revision));
+		Assert.That (earlier.Mode, Is.Null, "An already captured REST snapshot must remain identifiable as older.");
+		}
+	[Test]
 	public void OlderRestResultCannotOverwriteNewerPushAndOrderingIsPerObservation ()
 		{
 		var state = new ObservationState ("ABC123");

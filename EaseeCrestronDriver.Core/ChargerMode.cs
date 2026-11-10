@@ -1,4 +1,7 @@
-﻿namespace Easee.CrestronDriver;
+// Copyright (c) 2026 Neil Colvin.
+// Licensed under the MIT License with Commons Clause. See LICENSE in the repository root.
+
+namespace Easee.CrestronDriver;
 
 // Observation 109 values published at https://developer.easee.com/docs/enumerations.
 // The REST state DTO enum omits 0, 7 and 8; observations carry integer values.

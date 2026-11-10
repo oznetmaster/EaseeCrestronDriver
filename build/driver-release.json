@@ -1,0 +1,15 @@
+{
+  "name": "EaseeCrestronDriver",
+  "version": "1.0.3",
+  "packages": [
+    {
+      "id": "CrestronHomeDriver.Easee.Charger",
+      "project": "EaseeCrestronDriver/EaseeCrestronDriver.csproj",
+      "manifest": "EaseeCrestronDriver/EaseeCrestronDriver.json",
+      "payload": "EaseeCrestronDriver.pkg",
+      "displayName": "EaseeCrestronDriver",
+      "vendor": "Easee",
+      "category": "Electric Vehicle Charger"
+    }
+  ]
+}

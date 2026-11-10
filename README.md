@@ -1,5 +1,9 @@
 # EaseeCrestronDriver
 
+## Current GitHub/NuGet release: 1.0.3
+
+[Download 1.0.3](https://github.com/oznetmaster/EaseeCrestronDriver/releases/tag/v1.0.3) or use the matching NuGet driver distribution. This patch includes the audited dependency and lifecycle corrections; see [release notes](RELEASE-NOTES.md). Existing configuration and pairing formats are retained. Crestron catalog/submission versions below retain their separate attribution.
+
 Crestron Home Entity V2 driver for one Easee charger, using the published **EaseeChargerClient 1.0.0** package. The shipping solution and its unit/live tests target **.NET Framework 4.7.2** and use the latest C# language. The separate Android UI validation harness targets .NET 10 for the public test workflow. [Public source](https://github.com/oznetmaster/EaseeCrestronDriver). Download the stable driver package from [GitHub Releases](https://github.com/oznetmaster/EaseeCrestronDriver/releases/latest).
 
 The tile reports status and charging power. When a vehicle is connected and idle, a verified future schedule start takes precedence. Configure can place the tile on its room page, the home page, or both. The Room tile provides a direct Charge/Stop action and separate detail navigation. The Home tile opens details, where Charge and Stop are available. This matches the observed Crestron Home 4.11.1+pr behavior and the selected design. A shared v3 tile definition retains action and navigation so Both can provide the Room action.

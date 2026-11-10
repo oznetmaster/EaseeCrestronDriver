@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+// Copyright (c) 2026 Neil Colvin.
+// Licensed under the MIT License with Commons Clause. See LICENSE in the repository root.
+
+using System.Globalization;
 
 using EaseeChargerClient;
 using EaseeChargerClient.Models;
@@ -11,6 +14,7 @@ internal sealed class ObservationState (string serialNumber)
 	{
 	private readonly Dictionary<int, Current_Device_State_API_Observation> _values = new ();
 	private readonly object _gate = new ();
+	private long _revision;
 	internal const string RequestedIds = "30,47,48,103,104,109,119,120,121,124,250";
 
 	internal bool Apply (IEnumerable<Current_Device_State_API_Observation> observations)
@@ -24,6 +28,7 @@ internal sealed class ObservationState (string serialNumber)
 				if (_values.TryGetValue (id, out var old) && old.Timestamp >= timestamp)
 					continue;
 				_values[id] = observation;
+				_revision++;
 				changed = true;
 				}
 		return changed;
@@ -67,6 +72,7 @@ internal sealed class ObservationState (string serialNumber)
 			{
 			return new ChargerReading
 				{
+				Revision = _revision,
 				Mode = Integer (109) is long mode && mode >= int.MinValue && mode <= int.MaxValue ? (ChargerMode)(int)mode : null,
 				Online = Integer (109) == 0 ? false : Boolean (250),
 				PowerKilowatts = Number (120),

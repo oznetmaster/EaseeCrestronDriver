@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Neil Colvin.
+// Licensed under the MIT License with Commons Clause. See LICENSE in the repository root.
+
 using Crestron.DeviceDrivers.SDK.EntityModel.Attributes;
 
 namespace Easee.CrestronDriver;
@@ -38,6 +41,8 @@ public sealed partial class EaseeDriver
 		lock (_stateLock)
 			{
 			if (_disposed || cancellationToken.IsCancellationRequested)
+				return;
+			if (_previous is { } latest && reading.Revision < latest.Revision)
 				return;
 			var schedule = SchedulePlanner.Next (_schedule, DateTimeOffset.UtcNow);
 			reading = reading with

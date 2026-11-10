@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3](https://github.com/oznetmaster/EaseeCrestronDriver/releases/tag/v1.0.3) - 2026-11-10
+
+- Use EaseeChargerClient 1.0.1.
+- Publish charger observations in revision order so a delayed REST refresh cannot overwrite newer confirmed push feedback.
+- Enforce warnings as errors in Debug builds and retain warnings in Release builds.
+
 ## [1.0.2](https://github.com/oznetmaster/EaseeCrestronDriver/releases/tag/v1.0.2) — 2026-10-22
 
 - Publish the `CrestronHomeDriver.Easee.Charger` NuGet distribution wrapper with the v1 community manifest, required metadata and exact final driver payload, using GitHub OIDC trusted publishing.

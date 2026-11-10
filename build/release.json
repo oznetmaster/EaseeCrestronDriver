@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "name": "EaseeCrestronDriver",
+  "versionFile": "build/ReleaseVersion.props",
+  "versionXPath": "/Project/PropertyGroup/Version",
+  "notesFile": "release-notes/v{version}.md",
+  "packages": [
+    {
+      "frameworks": [],
+      "project": "EaseeCrestronDriver/EaseeCrestronDriver.csproj",
+      "id": "CrestronHomeDriver.Easee.Charger",
+      "symbols": false
+    }
+  ],
+  "applications": [],
+  "documents": [
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "rawLibraries": false,
+  "libraryArchive": false
+}

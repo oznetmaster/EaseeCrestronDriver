@@ -1,4 +1,7 @@
-﻿using Crestron.DeviceDrivers.EntityModel.Data;
+// Copyright (c) 2026 Neil Colvin.
+// Licensed under the MIT License with Commons Clause. See LICENSE in the repository root.
+
+using Crestron.DeviceDrivers.EntityModel.Data;
 using Crestron.DeviceDrivers.SDK.EntityModel.Attributes;
 
 namespace Easee.CrestronDriver;
